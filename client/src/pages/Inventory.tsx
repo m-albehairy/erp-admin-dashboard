@@ -102,10 +102,6 @@ export default function Inventory() {
       <div className="space-y-6">
         {/* Header Section */}
         <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${isRTL ? "text-right" : ""}`}>
-          <div>
-            <h2 className="font-display font-bold text-2xl text-foreground">Inventory Management</h2>
-            <p className="text-sm text-muted-foreground mt-1">Manage your product inventory and stock levels</p>
-          </div>
           <Button onClick={() => setIsCreateModalOpen(true)} className="bg-primary hover:bg-blue-700 text-white flex items-center gap-2 w-full sm:w-auto">
             <Plus size={18} />
             Add Product

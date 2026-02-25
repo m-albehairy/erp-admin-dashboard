@@ -29,10 +29,25 @@ interface NavItem {
 
 export default function DashboardLayout({ children, currentPage = "Dashboard", breadcrumbs }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("expandedMenus");
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
   const { theme, language, financialYear, toggleTheme, setLanguage, setFinancialYear } = useSettings();
 
   const isRTL = language === "ar";
+
+  // Persist expanded menus to localStorage
+  const handleToggleMenu = (menuName: string) => {
+    const newExpanded = expandedMenus.includes(menuName)
+      ? expandedMenus.filter((m) => m !== menuName)
+      : [...expandedMenus, menuName];
+    setExpandedMenus(newExpanded);
+    localStorage.setItem("expandedMenus", JSON.stringify(newExpanded));
+  };
 
   const navItems: NavItem[] = [
     { name: "Dashboard", icon: "📊", href: "/" },
@@ -94,12 +109,6 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
     },
   ];
 
-  const toggleMenu = (menuName: string) => {
-    setExpandedMenus((prev) =>
-      prev.includes(menuName) ? prev.filter((m) => m !== menuName) : [...prev, menuName]
-    );
-  };
-
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -122,12 +131,12 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
         {item.submenu ? (
           <>
             <button
-              onClick={() => toggleMenu(item.name)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-sidebar-accent/50 ${
+              onClick={() => handleToggleMenu(item.name)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-sidebar-accent/50 hover:scale-105 hover:translate-x-1 ${
                 expandedMenus.includes(item.name) ? "bg-sidebar-accent/50" : ""
               } ${level > 0 ? "text-sm" : ""}`}
             >
-              <span className="text-xl">{item.icon}</span>
+              <span className="text-base">{item.icon}</span>
               {sidebarOpen && (
                 <>
                   <span className="flex-1 text-left">{item.name}</span>
@@ -147,13 +156,13 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
         ) : (
           <Link
             href={item.href || "/"}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 hover:translate-x-1 ${
               currentPage === item.name
                 ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                 : "text-sidebar-foreground hover:bg-sidebar-accent/50"
             } ${level > 0 ? "text-sm" : ""}`}
           >
-            <span className="text-xl">{item.icon}</span>
+            <span className="text-base">{item.icon}</span>
             {sidebarOpen && <span>{item.name}</span>}
           </Link>
         )}
