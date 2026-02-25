@@ -138,7 +138,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
               } ${level > 0 ? "text-sm" : ""}`}
             >
               <span className="text-base">{item.icon}</span>
-              {sidebarOpen && (
+              {(sidebarOpen || sidebarHovered) && (
                 <>
                   <span className="flex-1 text-left">{item.name}</span>
                   <ChevronDown
@@ -148,7 +148,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                 </>
               )}
             </button>
-            {expandedMenus.includes(item.name) && sidebarOpen && (
+            {expandedMenus.includes(item.name) && (sidebarOpen || sidebarHovered) && (
               <div className="pl-4 space-y-1 border-l-2 border-sidebar-accent ml-4">
                 {renderNavItems(item.submenu, level + 1)}
               </div>
@@ -164,7 +164,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
             } ${level > 0 ? "text-sm" : ""}`}
           >
             <span className="text-base">{item.icon}</span>
-            {sidebarOpen && <span>{item.name}</span>}
+            {(sidebarOpen || sidebarHovered) && <span>{item.name}</span>}
           </Link>
         )}
       </div>
@@ -188,10 +188,10 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-lg">
               E
             </div>
-            {sidebarOpen && <span className="font-display font-bold text-lg text-foreground">ERP</span>}
+            {(sidebarOpen || sidebarHovered) && <span className="font-display font-bold text-lg text-foreground">ERP</span>}
           </Link>
 
-          {sidebarOpen && (
+          {(sidebarOpen || sidebarHovered) && (
             <div className="bg-sidebar-accent/50 rounded-lg p-3 border border-sidebar-border/50">
               <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
                 <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
@@ -211,7 +211,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
           {renderNavItems(navItems)}
 
           {/* Separator with Title */}
-          {sidebarOpen && (
+          {(sidebarOpen || sidebarHovered) && (
             <div className="py-4 px-4">
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-px bg-sidebar-border"></div>
@@ -223,7 +223,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
 
           <Link href="/settings" className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors text-sm ${isRTL ? "flex-row-reverse" : ""}`}>
             <Settings size={18} />
-            {sidebarOpen && <span>Settings</span>}
+            {(sidebarOpen || sidebarHovered) && <span>Settings</span>}
           </Link>
         </nav>
 
@@ -231,7 +231,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
         <div className={`p-4 border-t border-sidebar-border space-y-2 ${isRTL ? "text-right" : ""}`}>
           <button className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors text-sm ${isRTL ? "flex-row-reverse" : ""}`}>
             <LogOut size={18} />
-            {sidebarOpen && <span>Logout</span>}
+            {(sidebarOpen || sidebarHovered) && <span>Logout</span>}
           </button>
         </div>
       </aside>
