@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Menu, X, Bell, Settings, LogOut, User, Search, Globe, Maximize2, Moon, Sun, Calendar, ChevronDown, ChevronRight } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTachometerAlt, faUsers, faFileAlt, faShoppingCart, faFileInvoiceDollar, faUndo, faReceipt, faChartBar, faStore, faBox, faBoxes, faRuler, faWarehouse, faClipboardList, faExchangeAlt, faChartLine, faCoins, faCreditCard, faDollarSign, faSync, faMoneyBillWave, faBank, faCashRegister, faCheckDouble, faChartPie, faBook, faTags, faBalanceScale, faCalendarAlt, faClock, faLock, faScaleBalanced, faMoneyBill, faBriefcase, faSyncAlt, faCog, faBuilding, faSortNumericUp, faTag, faHistory, faFileLines, faChartLine as faChart } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Breadcrumb from "@/components/Breadcrumb";
@@ -22,13 +24,15 @@ interface DashboardLayoutProps {
 
 interface NavItem {
   name: string;
-  icon: string;
+  icon: any;
   href?: string;
   submenu?: NavItem[];
   isHeader?: boolean;
 }
 
 export default function DashboardLayout({ children, currentPage = "Dashboard", breadcrumbs }: DashboardLayoutProps) {
+  const [location] = useLocation();
+  const currentPath = location;
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarHovered, setSidebarHovered] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<string[]>(() => {
@@ -42,6 +46,18 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
   const { theme, language, financialYear, toggleTheme, setLanguage, setFinancialYear } = useSettings();
 
   const isRTL = language === "ar";
+
+  // Function to check if a menu item is active based on current route
+  const isMenuItemActive = (href?: string): boolean => {
+    if (!href) return false;
+    return currentPath === href;
+  };
+
+  // Function to check if a menu group is active (any submenu item is active)
+  const isMenuGroupActive = (submenu?: NavItem[]): boolean => {
+    if (!submenu) return false;
+    return submenu.some(item => isMenuItemActive(item.href));
+  };
 
   // Arabic translations for menu items
   const translations: Record<string, Record<string, string>> = {
@@ -221,14 +237,14 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
   };
 
   const navItems: NavItem[] = [
-    { name: "Dashboard", icon: "📊", href: "/" },
+    { name: "Dashboard", icon: faTachometerAlt, href: "/" },
     { name: "SALES", icon: "", isHeader: true },
     {
       name: "Customers",
       icon: "👥",
       submenu: [
-        { name: "All Customers", icon: "👥", href: "/customer-details" },
-        { name: "Customer Groups", icon: "👫", href: "/customer-details" },
+        { name: "All Customers", icon: faUsers, href: "/customer-details" },
+        { name: "Customer Groups", icon: faUsers, href: "/customer-details" },
       ],
     },
     {
@@ -240,9 +256,9 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       name: "Sales Orders",
       icon: "🛒",
       submenu: [
-        { name: "All Orders", icon: "📋", href: "/order-details" },
-        { name: "Pending", icon: "⏳", href: "/order-details" },
-        { name: "Completed", icon: "✅", href: "/order-details" },
+        { name: "All Orders", icon: faClipboardList, href: "/order-details" },
+        { name: "Pending", icon: faClock, href: "/order-details" },
+        { name: "Completed", icon: faCheckDouble, href: "/order-details" },
       ],
     },
     {
@@ -270,8 +286,8 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       name: "Vendors",
       icon: "🏪",
       submenu: [
-        { name: "All Vendors", icon: "🏪", href: "/vendors" },
-        { name: "Vendor Groups", icon: "🏢", href: "/vendors" },
+        { name: "All Vendors", icon: faStore, href: "/vendors" },
+        { name: "Vendor Groups", icon: faBuilding, href: "/vendors" },
       ],
     },
     {
@@ -304,9 +320,9 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       name: "Products",
       icon: "📦",
       submenu: [
-        { name: "All Products", icon: "📦", href: "/product-details" },
-        { name: "In Stock", icon: "✅", href: "/product-details" },
-        { name: "Low Stock", icon: "⚠️", href: "/product-details" },
+        { name: "All Products", icon: faBox, href: "/product-details" },
+        { name: "In Stock", icon: faCheckDouble, href: "/product-details" },
+        { name: "Low Stock", icon: faExchangeAlt, href: "/product-details" },
       ],
     },
     {
@@ -557,17 +573,22 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
           </div>
         );
       }
+      const isActive = isMenuItemActive(item.href);
+      const isGroupActive = isMenuGroupActive(item.submenu);
+      
       return (
       <div key={item.name}>
         {item.submenu ? (
           <>
             <button
               onClick={() => handleToggleMenu(item.name)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-sidebar-accent/50 hover:scale-105 ${isRTL ? "hover:-translate-x-1" : "hover:translate-x-1"} ${
-                expandedMenus.includes(item.name) ? "bg-sidebar-accent/50" : ""
-              } ${level > 0 ? "text-sm" : ""} ${isRTL ? "flex-row-reverse" : ""}`}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 ${
+                isGroupActive || expandedMenus.includes(item.name)
+                  ? "bg-primary text-white font-medium"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+              } ${isRTL ? "hover:-translate-x-1" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""} ${isRTL ? "flex-row-reverse" : ""}`}
             >
-              <span className="text-base">{item.icon}</span>
+              <FontAwesomeIcon icon={item.icon} className="w-4 h-4" />
               {(sidebarOpen || sidebarHovered) && (
                 <>
                   <span className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}>{getTranslation(item.name)}</span>
@@ -587,14 +608,13 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
         ) : (
           <Link
             href={item.href || "/"}
-            data-active={currentPage === item.name ? "true" : "false"}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 ${isRTL ? "hover:-translate-x-1 flex-row-reverse" : "hover:translate-x-1"} ${
-              currentPage === item.name
-                ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 ${
+              isActive
+                ? "bg-primary text-white font-medium"
                 : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-            } ${level > 0 ? "text-sm" : ""}`}
+            } ${isRTL ? "hover:-translate-x-1 flex-row-reverse" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""}`}
           >
-            <span className="text-base">{item.icon}</span>
+            <FontAwesomeIcon icon={item.icon} className="w-4 h-4" />
             {(sidebarOpen || sidebarHovered) && <span>{getTranslation(item.name)}</span>}
           </Link>
         )}
