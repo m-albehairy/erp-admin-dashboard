@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, Mail, Phone, MapPin, Calendar, DollarSign, ShoppingCart, TrendingUp, MessageSquare, Edit, MoreVertical, Award, Info, History, MessageCircle } from "lucide-react";
 import TabsWithIcons from "@/components/TabsWithIcons";
+import AnimatedModal from "@/components/AnimatedModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +18,8 @@ export default function CustomerDetails() {
   const { language } = useSettings();
   const isRTL = language === "ar";
   const [activeTab, setActiveTab] = useState("overview");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({ name: "John Doe", email: "john@example.com", phone: "+1 (555) 123-4567", address: "123 Main St" });
 
   const breadcrumbs = [
     { label: "Dashboard", href: "/" },
@@ -56,7 +59,7 @@ export default function CustomerDetails() {
             </div>
           </div>
           <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <Button className="bg-primary hover:bg-blue-700 text-white">
+            <Button onClick={() => setIsEditModalOpen(true)} className="bg-primary hover:bg-blue-700 text-white">
               <Edit size={16} className="mr-2" />
               Edit
             </Button>
@@ -275,6 +278,58 @@ export default function CustomerDetails() {
             </Card>
           </div>
         </div>
+
+        {/* Edit Customer Modal */}
+        <AnimatedModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          title="Edit Customer"
+          onSubmit={() => {
+            setIsEditModalOpen(false);
+          }}
+          submitLabel="Update Customer"
+          size="md"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground">Full Name</label>
+              <Input
+                placeholder="Enter full name"
+                value={editFormData.name}
+                onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Email</label>
+              <Input
+                type="email"
+                placeholder="Enter email address"
+                value={editFormData.email}
+                onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Phone</label>
+              <Input
+                placeholder="Enter phone number"
+                value={editFormData.phone}
+                onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Address</label>
+              <Input
+                placeholder="Enter address"
+                value={editFormData.address}
+                onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+          </div>
+        </AnimatedModal>
       </div>
     </DashboardLayout>
   );

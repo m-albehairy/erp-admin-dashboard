@@ -1,7 +1,7 @@
 import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import TableControls from "@/components/TableControls";
-import FormModal from "@/components/FormModal";
+import AnimatedModal from "@/components/AnimatedModal";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -86,13 +86,6 @@ export default function OrderDetails() {
   return (
     <DashboardLayout currentPage="Orders" breadcrumbs={breadcrumbs}>
       <div className="space-y-6">
-        {/* Header */}
-        <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${isRTL ? "text-right" : ""}`}>
-          <div>
-            <h2 className="font-display font-bold text-2xl text-foreground">Orders Management</h2>
-            <p className="text-sm text-muted-foreground mt-1">Manage and track all customer orders</p>
-          </div>
-        </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -261,16 +254,16 @@ export default function OrderDetails() {
         )}
 
         {/* Create Modal */}
-        <FormModal
+        <AnimatedModal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
           title="Create New Order"
-          description="Enter order details"
           onSubmit={() => {
             setIsCreateModalOpen(false);
             setFormData({ orderNo: "", customer: "", amount: "", status: "" });
           }}
           submitLabel="Create Order"
+          size="md"
         >
           <div className="space-y-4">
             <div>
@@ -286,19 +279,19 @@ export default function OrderDetails() {
               <Input placeholder="Enter amount" className="mt-1" />
             </div>
           </div>
-        </FormModal>
+        </AnimatedModal>
 
         {/* Edit Modal */}
-        <FormModal
+        <AnimatedModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           title="Edit Order"
-          description="Update order details"
           onSubmit={() => {
             setIsEditModalOpen(false);
             setFormData({ orderNo: "", customer: "", amount: "", status: "" });
           }}
           submitLabel="Update Order"
+          size="md"
         >
           <div className="space-y-4">
             <div>
@@ -314,7 +307,7 @@ export default function OrderDetails() {
               <Input value={formData.amount} placeholder="Enter amount" className="mt-1" />
             </div>
           </div>
-        </FormModal>
+        </AnimatedModal>
       </div>
     </DashboardLayout>
   );
