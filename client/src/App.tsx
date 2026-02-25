@@ -7,11 +7,13 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Dashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
 import Analytics from "./pages/Analytics";
+import Showcase from "./pages/Showcase";
 
 
 function Router() {
   return (
     <Switch>
+      <Route path={"/showcase"} component={Showcase} />
       <Route path={"/"} component={Dashboard} />
       <Route path={"/inventory"} component={Inventory} />
       <Route path={"/analytics"} component={Analytics} />
