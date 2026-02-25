@@ -209,28 +209,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
     return translations[language]?.[text] || text;
   };
 
-  // Auto-scroll to active menu item (only on page change, with delay to ensure DOM is ready)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (navContainerRef.current) {
-        const activeItem = navContainerRef.current.querySelector('[data-active="true"]');
-        if (activeItem) {
-          const container = navContainerRef.current;
-          const itemTop = (activeItem as HTMLElement).offsetTop;
-          const itemHeight = (activeItem as HTMLElement).offsetHeight;
-          const containerHeight = container.clientHeight;
-          const scrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
-          
-          container.scrollTo({
-            top: Math.max(0, scrollTop),
-            behavior: 'smooth'
-          });
-        }
-      }
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, [currentPage]);
+  // Removed auto-scroll to prevent unwanted scrolling when clicking menu items
 
   // Persist expanded menus to localStorage
   const handleToggleMenu = (menuName: string) => {
