@@ -7,7 +7,7 @@ import AdvancedFilters from "@/components/AdvancedFilters";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, Edit, Trash2, Eye, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Edit, Trash2, Eye, Search, Plus, Download, Printer, RotateCcw, Grid3x3, List } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -91,6 +91,15 @@ export default function OrderDetails() {
     <DashboardLayout currentPage="Orders" breadcrumbs={breadcrumbs}>
       <div className="space-y-6">
 
+        {/* Header with Create Button */}
+        <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${isRTL ? "text-right" : ""}`}>
+          <h2 className="text-2xl font-bold text-foreground">Sales Orders</h2>
+          <Button className="bg-primary hover:bg-blue-700 text-white flex items-center gap-2 w-full sm:w-auto" onClick={() => setIsCreateModalOpen(true)}>
+            <Plus size={18} />
+            Create Order
+          </Button>
+        </div>
+
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="p-4 bg-white shadow-sm border-0">
@@ -139,13 +148,13 @@ export default function OrderDetails() {
         {/* Search and Advanced Controls - Single Row */}
         <Card className="p-4 bg-white shadow-sm border-0">
           <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
-            {/* Search Bar */}
+            {/* Search Bar with Better Spacing */}
             <div className="relative flex-1 min-w-xs">
-              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-4" : "left-4"}`} />
+              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-3" : "left-3"}`} />
               <Input 
                 type="text" 
                 placeholder="Search by order number or customer..." 
-                className={`${isRTL ? "pr-12 text-right" : "pl-12"} bg-secondary border-0`} 
+                className={`${isRTL ? "pr-10 pl-4 text-right" : "pl-10 pr-4"} bg-secondary border-0 h-10`} 
               />
             </div>
 
@@ -165,18 +174,66 @@ export default function OrderDetails() {
               }}
             />
 
-            {/* Table Controls */}
-            <TableControls
-              onSearch={() => {}}
-              onAddNew={() => setIsCreateModalOpen(true)}
-              onPrint={handlePrint}
-              onExport={handleExport}
-              onReload={handleReload}
-              onViewChange={setViewMode}
-              viewMode={viewMode}
-              isRTL={isRTL}
-              addButtonLabel="Create Order"
-            />
+            {/* Reload Button */}
+            <Button
+              variant="outline"
+              className="border-border"
+              onClick={handleReload}
+              title="Reload data"
+            >
+              <RotateCcw size={16} />
+            </Button>
+
+            {/* Print Button */}
+            <Button
+              variant="outline"
+              className="border-border"
+              onClick={handlePrint}
+              title="Print table"
+            >
+              <Printer size={16} />
+            </Button>
+
+            {/* Export Button */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="border-border flex items-center gap-2">
+                  <Download size={16} />
+                  <span className="hidden sm:inline">Export</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-48">
+                <DropdownMenuItem onClick={handleExport}>Export as CSV</DropdownMenuItem>
+                <DropdownMenuItem>Export as Excel</DropdownMenuItem>
+                <DropdownMenuItem>Export as PDF</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* View Mode Toggle */}
+            <div className="flex gap-1 border border-border rounded-lg p-1">
+              <button
+                onClick={() => setViewMode("table")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "table"
+                    ? "bg-primary text-white"
+                    : "text-foreground hover:bg-secondary"
+                }`}
+                title="Table view"
+              >
+                <List size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-primary text-white"
+                    : "text-foreground hover:bg-secondary"
+                }`}
+                title="Grid view"
+              >
+                <Grid3x3 size={16} />
+              </button>
+            </div>
           </div>
         </Card>
 
