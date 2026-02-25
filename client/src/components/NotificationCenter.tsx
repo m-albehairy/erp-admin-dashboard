@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Bell, X, CheckCircle, AlertCircle, Info, Trash2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Bell, X, CheckCircle, AlertCircle, Info } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Notification {
@@ -68,13 +72,13 @@ export default function NotificationCenter() {
   const getIcon = (type: string) => {
     switch (type) {
       case "success":
-        return <CheckCircle size={18} className="text-green-500" />;
+        return <CheckCircle size={16} className="text-green-500 flex-shrink-0" />;
       case "warning":
-        return <AlertCircle size={18} className="text-amber-500" />;
+        return <AlertCircle size={16} className="text-amber-500 flex-shrink-0" />;
       case "error":
-        return <AlertCircle size={18} className="text-red-500" />;
+        return <AlertCircle size={16} className="text-red-500 flex-shrink-0" />;
       default:
-        return <Info size={18} className="text-blue-500" />;
+        return <Info size={16} className="text-blue-500 flex-shrink-0" />;
     }
   };
 
@@ -91,170 +95,129 @@ export default function NotificationCenter() {
     return `${days}d ago`;
   };
 
+  const NotificationItem = ({ notif }: { notif: Notification }) => (
+    <div
+      className={`p-3 rounded-lg border flex items-start gap-3 cursor-pointer transition-colors ${
+        notif.read
+          ? "bg-white border-E9EDF4 hover:bg-secondary/30"
+          : "bg-blue-50 border-blue-200 hover:bg-blue-100"
+      }`}
+      onClick={() => handleMarkAsRead(notif.id)}
+    >
+      {getIcon(notif.type)}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-foreground">{notif.title}</p>
+        <p className="text-xs text-muted-foreground truncate">{notif.message}</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          {formatTime(notif.timestamp)}
+        </p>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-6 w-6 p-0 flex-shrink-0"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDelete(notif.id);
+        }}
+      >
+        <X size={14} />
+      </Button>
+    </div>
+  );
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative">
           <Bell size={18} />
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 w-5 h-5 bg-destructive text-white text-xs rounded-full flex items-center justify-center font-bold">
-              {unreadCount}
+            <span className="absolute -top-1 -right-1 bg-destructive text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
+              {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
         </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md max-h-96">
-        <DialogHeader className="flex flex-row items-center justify-between">
-          <DialogTitle>Notifications</DialogTitle>
-          {notifications.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClearAll}
-              className="text-xs"
-            >
-              Clear All
-            </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-96 p-0">
+        <div className="flex flex-col max-h-96">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-border">
+            <h3 className="font-semibold text-foreground">Notifications</h3>
+            {notifications.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearAll}
+                className="text-xs h-auto p-1"
+              >
+                Clear All
+              </Button>
+            )}
+          </div>
+
+          {/* Tabs */}
+          {notifications.length > 0 ? (
+            <Tabs defaultValue="all" className="w-full flex flex-col">
+              <TabsList className="grid w-full grid-cols-3 rounded-none border-b border-border">
+                <TabsTrigger value="all" className="rounded-none">
+                  All
+                </TabsTrigger>
+                <TabsTrigger value="unread" className="rounded-none">
+                  Unread ({unreadCount})
+                </TabsTrigger>
+                <TabsTrigger value="read" className="rounded-none">
+                  Read
+                </TabsTrigger>
+              </TabsList>
+
+              <div className="overflow-y-auto flex-1">
+                <TabsContent value="all" className="space-y-2 p-4 m-0">
+                  {notifications.map((notif) => (
+                    <NotificationItem key={notif.id} notif={notif} />
+                  ))}
+                </TabsContent>
+
+                <TabsContent value="unread" className="space-y-2 p-4 m-0">
+                  {notifications.filter((n) => !n.read).length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-sm text-muted-foreground">
+                        No unread notifications
+                      </p>
+                    </div>
+                  ) : (
+                    notifications
+                      .filter((n) => !n.read)
+                      .map((notif) => (
+                        <NotificationItem key={notif.id} notif={notif} />
+                      ))
+                  )}
+                </TabsContent>
+
+                <TabsContent value="read" className="space-y-2 p-4 m-0">
+                  {notifications.filter((n) => n.read).length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-sm text-muted-foreground">
+                        No read notifications
+                      </p>
+                    </div>
+                  ) : (
+                    notifications
+                      .filter((n) => n.read)
+                      .map((notif) => (
+                        <NotificationItem key={notif.id} notif={notif} />
+                      ))
+                  )}
+                </TabsContent>
+              </div>
+            </Tabs>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 px-4">
+              <Bell size={32} className="text-muted-foreground mb-2" />
+              <p className="text-sm text-muted-foreground">No notifications</p>
+            </div>
           )}
-        </DialogHeader>
-
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="unread">Unread</TabsTrigger>
-            <TabsTrigger value="read">Read</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all" className="space-y-2 max-h-72 overflow-y-auto">
-            {notifications.length === 0 ? (
-              <div className="text-center py-8">
-                <Bell size={32} className="mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">No notifications</p>
-              </div>
-            ) : (
-              notifications.map((notif) => (
-                <div
-                  key={notif.id}
-                  className={`p-3 rounded-lg border flex items-start gap-3 cursor-pointer transition-colors ${
-                    notif.read
-                      ? "bg-white border-E9EDF4"
-                      : "bg-blue-50 border-blue-200"
-                  }`}
-                  onClick={() => handleMarkAsRead(notif.id)}
-                >
-                  {getIcon(notif.type)}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">
-                      {notif.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {notif.message}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatTime(notif.timestamp)}
-                    </p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 w-6 p-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(notif.id);
-                    }}
-                  >
-                    <X size={14} />
-                  </Button>
-                </div>
-              ))
-            )}
-          </TabsContent>
-
-          <TabsContent value="unread" className="space-y-2 max-h-72 overflow-y-auto">
-            {notifications.filter((n) => !n.read).length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-sm text-muted-foreground">
-                  No unread notifications
-                </p>
-              </div>
-            ) : (
-              notifications
-                .filter((n) => !n.read)
-                .map((notif) => (
-                  <div
-                    key={notif.id}
-                    className="p-3 rounded-lg border bg-blue-50 border-blue-200 flex items-start gap-3 cursor-pointer"
-                    onClick={() => handleMarkAsRead(notif.id)}
-                  >
-                    {getIcon(notif.type)}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">
-                        {notif.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {notif.message}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {formatTime(notif.timestamp)}
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(notif.id);
-                      }}
-                    >
-                      <X size={14} />
-                    </Button>
-                  </div>
-                ))
-            )}
-          </TabsContent>
-
-          <TabsContent value="read" className="space-y-2 max-h-72 overflow-y-auto">
-            {notifications.filter((n) => n.read).length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-sm text-muted-foreground">
-                  No read notifications
-                </p>
-              </div>
-            ) : (
-              notifications
-                .filter((n) => n.read)
-                .map((notif) => (
-                  <div
-                    key={notif.id}
-                    className="p-3 rounded-lg border bg-white border-E9EDF4 flex items-start gap-3"
-                  >
-                    {getIcon(notif.type)}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">
-                        {notif.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {notif.message}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {formatTime(notif.timestamp)}
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0"
-                      onClick={() => handleDelete(notif.id)}
-                    >
-                      <X size={14} />
-                    </Button>
-                  </div>
-                ))
-            )}
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
