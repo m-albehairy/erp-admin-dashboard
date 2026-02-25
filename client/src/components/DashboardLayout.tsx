@@ -29,6 +29,7 @@ interface NavItem {
 
 export default function DashboardLayout({ children, currentPage = "Dashboard", breadcrumbs }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarHovered, setSidebarHovered] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("expandedMenus");
@@ -175,9 +176,11 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
     <div className={`flex h-screen bg-background ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
       {/* Sidebar */}
       <aside
+        onMouseEnter={() => !sidebarOpen && setSidebarHovered(true)}
+        onMouseLeave={() => setSidebarHovered(false)}
         className={`${
-          sidebarOpen ? (isRTL ? "w-64" : "w-64") : "w-20"
-        } bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col ${isRTL ? "border-r-0 border-l" : ""}`}
+          sidebarOpen || sidebarHovered ? (isRTL ? "w-64" : "w-64") : "w-20"
+        } bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out flex flex-col ${isRTL ? "border-r-0 border-l" : ""}`}
       >
         {/* Logo Section */}
         <div className={`p-6 border-b border-sidebar-border space-y-4 ${isRTL ? "text-right" : ""}`}>
