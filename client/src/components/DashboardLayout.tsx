@@ -24,6 +24,7 @@ interface NavItem {
   icon: string;
   href?: string;
   submenu?: NavItem[];
+  isHeader?: boolean;
 }
 
 export default function DashboardLayout({ children, currentPage = "Dashboard", breadcrumbs }: DashboardLayoutProps) {
@@ -37,6 +38,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
     { name: "Dashboard", icon: "📊", href: "/" },
     { name: "Inventory", icon: "📦", href: "/inventory" },
     { name: "Analytics", icon: "📈", href: "/analytics" },
+    { name: "SALES", icon: "", isHeader: true },
     {
       name: "Orders",
       icon: "🛒",
@@ -55,6 +57,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
         { name: "Inactive", icon: "🔒", href: "/customer-details" },
       ],
     },
+    { name: "OPERATIONS", icon: "", isHeader: true },
     {
       name: "Products",
       icon: "📦",
@@ -64,6 +67,17 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
         { name: "Low Stock", icon: "⚠️", href: "/product-details" },
       ],
     },
+    {
+      name: "Purchase Orders",
+      icon: "🛍️",
+      href: "/purchase-orders",
+    },
+    {
+      name: "Employees",
+      icon: "👤",
+      href: "/employees",
+    },
+    { name: "REPORTS & ANALYTICS", icon: "", isHeader: true },
     {
       name: "Reports",
       icon: "📋",
@@ -77,16 +91,6 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       name: "Financial",
       icon: "💰",
       href: "/financial",
-    },
-    {
-      name: "Employees",
-      icon: "👤",
-      href: "/employees",
-    },
-    {
-      name: "Purchase Orders",
-      icon: "🛍️",
-      href: "/purchase-orders",
     },
   ];
 
@@ -105,7 +109,15 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
   };
 
   const renderNavItems = (items: NavItem[], level = 0) => {
-    return items.map((item) => (
+    return items.map((item) => {
+      if (item.isHeader) {
+        return (
+          <div key={item.name} className={`py-3 px-4 ${sidebarOpen ? "" : "hidden"}`}>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{item.name}</p>
+          </div>
+        );
+      }
+      return (
       <div key={item.name}>
         {item.submenu ? (
           <>
@@ -146,7 +158,8 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
           </Link>
         )}
       </div>
-    ));
+    );
+    });
   };
 
   return (
@@ -380,13 +393,21 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
             </div>
           </div>
 
-          {/* Breadcrumb */}
-          {breadcrumbs && breadcrumbs.length > 0 && (
-            <div className={`px-6 py-2 ${isRTL ? "text-right" : ""}`}>
-              <Breadcrumb items={breadcrumbs} />
-            </div>
-          )}
         </header>
+
+        {/* Page Header with Breadcrumb */}
+        <div className="bg-background border-b border-border">
+          <div className="px-6 py-4">
+            <div className={`flex items-center justify-between mb-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+              <h1 className="font-display font-bold text-2xl text-foreground">{currentPage}</h1>
+            </div>
+            {breadcrumbs && breadcrumbs.length > 0 && (
+              <div className={isRTL ? "text-right" : ""}>
+                <Breadcrumb items={breadcrumbs} />
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Page Content */}
         <main className="flex-1 overflow-auto">

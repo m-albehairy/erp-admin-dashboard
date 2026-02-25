@@ -46,15 +46,15 @@
 }
 
 :root {
-  --primary: #0066CC;
+  --primary: #EF4444;
   --primary-foreground: #FFFFFF;
-  --sidebar-primary: #0052A3;
+  --sidebar-primary: #DC2626;
   --sidebar-primary-foreground: #FFFFFF;
-  --chart-1: #3B82F6;
-  --chart-2: #0066CC;
-  --chart-3: #0052A3;
-  --chart-4: #003D7A;
-  --chart-5: #002E5C;
+  --chart-1: #FCA5A5;
+  --chart-2: #EF4444;
+  --chart-3: #DC2626;
+  --chart-4: #B91C1C;
+  --chart-5: #991B1B;
   --radius: 0.5rem;
   --background: oklch(0.98 0.001 286.375);
   --foreground: oklch(0.235 0.015 65);
@@ -70,15 +70,15 @@
   --accent-foreground: oklch(1 0 0);
   --destructive: #EF4444;
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.92 0.004 286.32);
+  --border: #E9EDF4;
   --input: oklch(0.95 0.004 286.32);
-  --ring: #0066CC;
+  --ring: #EF4444;
   --sidebar: #FFFFFF;
   --sidebar-foreground: oklch(0.235 0.015 65);
   --sidebar-accent: #F3F4F6;
-  --sidebar-accent-foreground: #0066CC;
+  --sidebar-accent-foreground: #EF4444;
   --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: #0066CC;
+  --sidebar-ring: #EF4444;
 }
 
 .dark {
@@ -149,6 +149,18 @@
 }
 
 @layer components {
+  /* Component styling */
+  .card-component {
+    border-radius: 5px;
+    border: 1px solid #E9EDF4;
+    box-shadow: 0 4.4px 12px -1px #dedede5c;
+  }
+
+  .dark .card-component {
+    border: 1px solid #334155;
+    box-shadow: 0 4.4px 12px -1px rgba(0, 0, 0, 0.3);
+  }
+
   /**
    * Custom container utility that centers content and adds responsive padding.
    *
