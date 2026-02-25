@@ -3,9 +3,11 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Mail, Phone, MapPin, Calendar, DollarSign, ShoppingCart, TrendingUp, MessageSquare, Edit, MoreVertical, Award, Info, History, MessageCircle } from "lucide-react";
+import { ChevronLeft, Mail, Phone, MapPin, Calendar, DollarSign, ShoppingCart, TrendingUp, MessageSquare, Edit, MoreVertical, Award, Info, History, MessageCircle, Search, Download, Printer, RotateCcw, Grid3x3, List, Plus } from "lucide-react";
 import TabsWithIcons from "@/components/TabsWithIcons";
 import AnimatedModal from "@/components/AnimatedModal";
+import BulkActions from "@/components/BulkActions";
+import AdvancedFilters from "@/components/AdvancedFilters";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,17 +16,69 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSettings } from "@/contexts/SettingsContext";
 
+const customersData = [
+  { id: 1, name: "John Doe", email: "john@example.com", phone: "+1 (555) 123-4567", status: "active", totalOrders: 12, totalSpent: "$28,450" },
+  { id: 2, name: "Jane Smith", email: "jane@example.com", phone: "+1 (555) 234-5678", status: "active", totalOrders: 8, totalSpent: "$15,200" },
+  { id: 3, name: "Mike Johnson", email: "mike@example.com", phone: "+1 (555) 345-6789", status: "inactive", totalOrders: 3, totalSpent: "$4,500" },
+  { id: 4, name: "Sarah Williams", email: "sarah@example.com", phone: "+1 (555) 456-7890", status: "active", totalOrders: 15, totalSpent: "$42,100" },
+  { id: 5, name: "Tom Brown", email: "tom@example.com", phone: "+1 (555) 567-8901", status: "active", totalOrders: 6, totalSpent: "$9,800" },
+];
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case "active":
+      return "bg-green-50 text-green-600";
+    case "inactive":
+      return "bg-gray-50 text-gray-600";
+    case "pending":
+      return "bg-orange-50 text-orange-600";
+    default:
+      return "bg-gray-50 text-gray-600";
+  }
+}
+
 export default function CustomerDetails() {
   const { language } = useSettings();
   const isRTL = language === "ar";
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({ name: "John Doe", email: "john@example.com", phone: "+1 (555) 123-4567", address: "123 Main St" });
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
+
+  const totalPages = Math.ceil(customersData.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedData = customersData.slice(startIndex, startIndex + pageSize);
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExport = () => {
+    const csv = [
+      ["Customer Name", "Email", "Phone", "Status", "Total Orders", "Total Spent"],
+      ...customersData.map(item => [item.name, item.email, item.phone, item.status, item.totalOrders, item.totalSpent])
+    ].map(row => row.join(",")).join("\n");
+    
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "customers-export.csv";
+    a.click();
+  };
+
+  const handleReload = () => {
+    window.location.reload();
+  };
 
   const breadcrumbs = [
     { label: "Dashboard", href: "/" },
-    { label: "Customers", href: "/customers" },
-    { label: "John Doe" },
+    { label: "Sales", href: "#" },
+    { label: "Customers" },
   ];
 
   const orderHistory = [
@@ -40,294 +94,350 @@ export default function CustomerDetails() {
   ];
 
   return (
-    <DashboardLayout currentPage="Customer Details" breadcrumbs={breadcrumbs}>
+    <DashboardLayout currentPage="Customers" breadcrumbs={breadcrumbs}>
       <div className="space-y-6">
-        {/* Header */}
-        <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-          <div className={`flex items-center gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <button className="p-2 hover:bg-secondary rounded-lg transition-colors">
-              <ChevronLeft size={20} className="text-foreground" />
-            </button>
-            <div className={`flex items-center gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-              <div className="w-16 h-16 bg-gradient-to-br from-primary to-blue-700 rounded-full flex items-center justify-center text-white font-bold text-2xl">
-                JD
-              </div>
-              <div className={isRTL ? "text-right" : ""}>
-                <h2 className="font-display font-bold text-2xl text-foreground">John Doe</h2>
-                <p className="text-sm text-muted-foreground">Premium Customer • Member since Jan 2023</p>
-              </div>
+        {/* Header Section */}
+        <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${isRTL ? "text-right" : ""}`}>
+          <Button className="bg-primary hover:bg-blue-700 text-white flex items-center gap-2 w-full sm:w-auto">
+            <Plus size={18} />
+            Add Customer
+          </Button>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">Total Customers</p>
+            <h3 className="text-2xl font-bold text-foreground mt-2">1,245</h3>
+            <p className="text-xs text-muted-foreground mt-2">Active accounts</p>
+          </Card>
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">New This Month</p>
+            <h3 className="text-2xl font-bold text-green-600 mt-2">42</h3>
+            <p className="text-xs text-muted-foreground mt-2">Growing customer base</p>
+          </Card>
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
+            <h3 className="text-2xl font-bold text-primary mt-2">$2.4M</h3>
+            <p className="text-xs text-muted-foreground mt-2">Lifetime value</p>
+          </Card>
+        </div>
+
+        {/* Bulk Actions */}
+        {selectedItems.length > 0 && (
+          <BulkActions
+            selectedCount={selectedItems.length}
+            isAllSelected={selectedItems.length === paginatedData.length}
+            onSelectAll={(checked) => {
+              if (checked) {
+                setSelectedItems(paginatedData.map(item => item.id));
+              } else {
+                setSelectedItems([]);
+              }
+            }}
+            onDelete={() => {
+              setSelectedItems([]);
+            }}
+            onExport={() => {
+              handleExport();
+              setSelectedItems([]);
+            }}
+            onStatusUpdate={() => {
+              setSelectedItems([]);
+            }}
+          />
+        )}
+
+        {/* Search and Advanced Controls - Single Row */}
+        <Card className="p-4 bg-white shadow-sm border-0">
+          <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
+            {/* Search Bar */}
+            <div className="relative flex-1 min-w-xs">
+              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-4" : "left-4"}`} />
+              <Input 
+                type="text" 
+                placeholder="Search by name or email..." 
+                className={`${isRTL ? "pr-12 text-right" : "pl-12"} bg-secondary border-0`} 
+              />
             </div>
-          </div>
-          <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <Button onClick={() => setIsEditModalOpen(true)} className="bg-primary hover:bg-blue-700 text-white">
-              <Edit size={16} className="mr-2" />
-              Edit
+
+            {/* Advanced Filters */}
+            <AdvancedFilters
+              onApplyFilters={(filters) => setAppliedFilters(filters)}
+              onClearFilters={() => setAppliedFilters({})}
+              filterOptions={{
+                status: {
+                  label: "Status",
+                  options: ["Active", "Inactive", "Pending"],
+                },
+                segment: {
+                  label: "Customer Segment",
+                  options: ["Premium", "Standard", "New"],
+                },
+              }}
+            />
+
+            {/* Reload Button */}
+            <Button
+              variant="outline"
+              className="border-border"
+              onClick={handleReload}
+              title="Reload data"
+            >
+              <RotateCcw size={16} />
             </Button>
+
+            {/* Print Button */}
+            <Button
+              variant="outline"
+              className="border-border"
+              onClick={handlePrint}
+              title="Print table"
+            >
+              <Printer size={16} />
+            </Button>
+
+            {/* Export Button */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-border">
-                  <MoreVertical size={16} />
+                <Button variant="outline" className="border-border flex items-center gap-2">
+                  <Download size={16} />
+                  <span className="hidden sm:inline">Export</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align={isRTL ? "start" : "end"}>
-                <DropdownMenuItem>Send Email</DropdownMenuItem>
-                <DropdownMenuItem>Create Order</DropdownMenuItem>
-                <DropdownMenuItem>View Invoices</DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive">Deactivate</DropdownMenuItem>
+              <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-48">
+                <DropdownMenuItem onClick={handleExport}>Export as CSV</DropdownMenuItem>
+                <DropdownMenuItem>Export as Excel</DropdownMenuItem>
+                <DropdownMenuItem>Export as PDF</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* View Mode Toggle */}
+            <div className="flex gap-1 border border-border rounded-lg p-1">
+              <button
+                onClick={() => setViewMode("table")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "table"
+                    ? "bg-primary text-white"
+                    : "text-foreground hover:bg-secondary"
+                }`}
+                title="Table view"
+              >
+                <List size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-primary text-white"
+                    : "text-foreground hover:bg-secondary"
+                }`}
+                title="Grid view"
+              >
+                <Grid3x3 size={16} />
+              </button>
+            </div>
           </div>
-        </div>
+        </Card>
 
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-4 bg-white shadow-sm border-0">
-            <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-              <div className={isRTL ? "text-right" : ""}>
-                <p className="text-xs font-medium text-muted-foreground uppercase">Total Orders</p>
-                <h3 className="text-2xl font-bold text-foreground mt-1">12</h3>
+        {/* Table View */}
+        {viewMode === "table" && (
+          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-secondary/50">
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.length === paginatedData.length && paginatedData.length > 0}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedItems(paginatedData.map(item => item.id));
+                          } else {
+                            setSelectedItems([]);
+                          }
+                        }}
+                        className="w-4 h-4 rounded border-border"
+                      />
+                    </th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Customer Name</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Email</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Phone</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Status</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Total Orders</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Total Spent</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedData.map((item) => (
+                    <tr key={item.id} className="border-b border-border hover:bg-secondary/50 transition-colors">
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedItems([...selectedItems, item.id]);
+                            } else {
+                              setSelectedItems(selectedItems.filter(id => id !== item.id));
+                            }
+                          }}
+                          className="w-4 h-4 rounded border-border"
+                        />
+                      </td>
+                      <td className="px-6 py-4 text-sm text-foreground font-medium">{item.name}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.email}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.phone}</td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                          {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-foreground">{item.totalOrders}</td>
+                      <td className="px-6 py-4 text-sm text-foreground font-medium">{item.totalSpent}</td>
+                      <td className="px-6 py-4 text-center">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical size={16} />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align={isRTL ? "start" : "end"}>
+                            <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>Edit</DropdownMenuItem>
+                            <DropdownMenuItem>View Details</DropdownMenuItem>
+                            <DropdownMenuItem>Send Email</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className={`flex items-center justify-between px-6 py-4 border-t border-border ${isRTL ? "flex-row-reverse" : ""}`}>
+              <div className="text-sm text-muted-foreground">
+                Showing {startIndex + 1} to {Math.min(startIndex + pageSize, customersData.length)} of {customersData.length}
               </div>
-              <ShoppingCart size={24} className="text-primary" />
+              <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-2 border border-border rounded-lg text-sm bg-white text-foreground"
+              >
+                <option value={5}>5 per page</option>
+                <option value={10}>10 per page</option>
+                <option value={25}>25 per page</option>
+                <option value={50}>50 per page</option>
+              </select>
             </div>
           </Card>
+        )}
 
-          <Card className="p-4 bg-white shadow-sm border-0">
-            <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-              <div className={isRTL ? "text-right" : ""}>
-                <p className="text-xs font-medium text-muted-foreground uppercase">Total Spent</p>
-                <h3 className="text-2xl font-bold text-foreground mt-1">$28,450</h3>
-              </div>
-              <DollarSign size={24} className="text-accent" />
-            </div>
-          </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
-            <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-              <div className={isRTL ? "text-right" : ""}>
-                <p className="text-xs font-medium text-muted-foreground uppercase">Avg Order</p>
-                <h3 className="text-2xl font-bold text-foreground mt-1">$2,371</h3>
-              </div>
-              <TrendingUp size={24} className="text-blue-500" />
-            </div>
-          </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
-            <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-              <div className={isRTL ? "text-right" : ""}>
-                <p className="text-xs font-medium text-muted-foreground uppercase">Loyalty</p>
-                <h3 className="text-2xl font-bold text-foreground mt-1">Gold</h3>
-              </div>
-              <Award size={24} className="text-orange-500" />
-            </div>
-          </Card>
-        </div>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Tabs */}
-            <Card className="bg-white shadow-sm border-0 p-0 overflow-hidden">
-              <TabsWithIcons
-                tabs={[
-                  { id: "overview", label: "Overview", icon: Info },
-                  { id: "orders", label: "Orders", icon: History },
-                  { id: "communication", label: "Communication", icon: MessageCircle },
-                ]}
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                isRTL={isRTL}
-              />
-
-              {/* Tab Content */}
-              <div className="p-6">
-                {activeTab === "overview" && (
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className={`font-semibold text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>Contact Information</h4>
-                      <div className="space-y-3">
-                        <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-                          <Mail size={18} className="text-muted-foreground" />
-                          <div className={isRTL ? "text-right" : ""}>
-                            <p className="text-xs text-muted-foreground">Email</p>
-                            <p className="text-sm font-medium text-foreground">john@example.com</p>
-                          </div>
-                        </div>
-                        <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-                          <Phone size={18} className="text-muted-foreground" />
-                          <div className={isRTL ? "text-right" : ""}>
-                            <p className="text-xs text-muted-foreground">Phone</p>
-                            <p className="text-sm font-medium text-foreground">+1 (555) 123-4567</p>
-                          </div>
-                        </div>
-                        <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-                          <Calendar size={18} className="text-muted-foreground" />
-                          <div className={isRTL ? "text-right" : ""}>
-                            <p className="text-xs text-muted-foreground">Member Since</p>
-                            <p className="text-sm font-medium text-foreground">January 15, 2023</p>
-                          </div>
-                        </div>
-                      </div>
+        {/* Grid View */}
+        {viewMode === "grid" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {paginatedData.map((item) => (
+              <Card key={item.id} className="p-4 bg-white shadow-sm border-0">
+                <div className={`flex items-start justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <div className={isRTL ? "text-right" : ""}>
+                    <h3 className="font-semibold text-foreground">{item.name}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{item.email}</p>
+                    <p className="text-xs text-muted-foreground">{item.phone}</p>
+                    <div className="mt-3 space-y-1">
+                      <p className="text-xs text-foreground"><span className="font-medium">Orders:</span> {item.totalOrders}</p>
+                      <p className="text-xs text-foreground"><span className="font-medium">Spent:</span> {item.totalSpent}</p>
                     </div>
-
-                    <div className="border-t border-border pt-6">
-                      <h4 className={`font-semibold text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>Billing Address</h4>
-                      <div className={isRTL ? "text-right" : ""}>
-                        <p className="text-sm text-foreground">123 Main Street</p>
-                        <p className="text-sm text-foreground">New York, NY 10001</p>
-                        <p className="text-sm text-foreground">United States</p>
-                      </div>
-                    </div>
                   </div>
-                )}
-
-                {activeTab === "orders" && (
-                  <div className="space-y-3">
-                    {orderHistory.map((order) => (
-                      <div key={order.id} className={`flex items-center justify-between p-4 border border-border rounded-lg hover:bg-secondary transition-colors cursor-pointer ${isRTL ? "flex-row-reverse" : ""}`}>
-                        <div className={isRTL ? "text-right" : ""}>
-                          <p className="font-medium text-foreground">{order.id}</p>
-                          <p className="text-xs text-muted-foreground">{order.date}</p>
-                        </div>
-                        <div className={`text-right ${isRTL ? "text-left" : ""}`}>
-                          <p className="font-semibold text-foreground">{order.amount}</p>
-                          <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                            order.status === "Delivered" ? "bg-green-50 text-accent" : "bg-blue-50 text-primary"
-                          }`}>
-                            {order.status}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {activeTab === "communication" && (
-                  <div className="space-y-4">
-                    {communicationLog.map((log, idx) => (
-                      <div key={idx} className={`p-4 border border-border rounded-lg ${isRTL ? "text-right" : ""}`}>
-                        <div className={`flex items-center gap-2 mb-2 ${isRTL ? "flex-row-reverse justify-end" : ""}`}>
-                          <span className="text-xs font-semibold px-2 py-1 bg-secondary rounded text-foreground">
-                            {log.type}
-                          </span>
-                          <span className="text-xs text-muted-foreground">{log.date}</span>
-                        </div>
-                        <p className="text-sm text-foreground">{log.message}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Card>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                    {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                  </span>
+                </div>
+              </Card>
+            ))}
           </div>
+        )}
 
-          {/* Right Column */}
-          <div className="space-y-6">
-            {/* Quick Actions */}
-            <Card className="bg-white shadow-sm border-0 p-6">
-              <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
-                Quick Actions
-              </h3>
-              <div className="space-y-2">
-                <Button className="w-full bg-primary hover:bg-blue-700 text-white justify-start">
-                  <ShoppingCart size={16} className="mr-2" />
-                  Create Order
-                </Button>
-                <Button variant="outline" className="w-full border-border justify-start">
-                  <Mail size={16} className="mr-2" />
-                  Send Email
-                </Button>
-                <Button variant="outline" className="w-full border-border justify-start">
-                  <MessageSquare size={16} className="mr-2" />
-                  Send Message
-                </Button>
-              </div>
-            </Card>
-
-            {/* Loyalty Program */}
-            <Card className="bg-gradient-to-br from-orange-50 to-yellow-50 shadow-sm border-0 p-6">
-              <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
-                Loyalty Program
-              </h3>
-              <div className={isRTL ? "text-right" : ""}>
-                <p className="text-sm text-muted-foreground mb-2">Current Tier: Gold</p>
-                <div className="w-full bg-secondary rounded-full h-2 mb-2">
-                  <div className="bg-orange-500 h-2 rounded-full" style={{ width: "75%" }}></div>
-                </div>
-                <p className="text-xs text-muted-foreground">2,500 / 5,000 points to Platinum</p>
-              </div>
-            </Card>
-
-            {/* Recent Activity */}
-            <Card className="bg-white shadow-sm border-0 p-6">
-              <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
-                Recent Activity
-              </h3>
-              <div className="space-y-3">
-                <div className={`text-sm ${isRTL ? "text-right" : ""}`}>
-                  <p className="text-foreground">Placed order ORD-2024-001</p>
-                  <p className="text-xs text-muted-foreground">2 days ago</p>
-                </div>
-                <div className={`text-sm ${isRTL ? "text-right" : ""}`}>
-                  <p className="text-foreground">Received shipment</p>
-                  <p className="text-xs text-muted-foreground">5 days ago</p>
-                </div>
-                <div className={`text-sm ${isRTL ? "text-right" : ""}`}>
-                  <p className="text-foreground">Left product review</p>
-                  <p className="text-xs text-muted-foreground">1 week ago</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-
-        {/* Edit Customer Modal */}
+        {/* Edit Modal */}
         <AnimatedModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           title="Edit Customer"
-          onSubmit={() => {
-            setIsEditModalOpen(false);
-          }}
-          submitLabel="Update Customer"
-          size="md"
         >
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-foreground">Full Name</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Name</label>
               <Input
-                placeholder="Enter full name"
+                type="text"
                 value={editFormData.name}
                 onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                className="mt-1"
+                placeholder="Customer name"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground">Email</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Email</label>
               <Input
                 type="email"
-                placeholder="Enter email address"
                 value={editFormData.email}
                 onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
-                className="mt-1"
+                placeholder="Email address"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground">Phone</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Phone</label>
               <Input
-                placeholder="Enter phone number"
+                type="tel"
                 value={editFormData.phone}
                 onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                className="mt-1"
+                placeholder="Phone number"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground">Address</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Address</label>
               <Input
-                placeholder="Enter address"
+                type="text"
                 value={editFormData.address}
                 onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
-                className="mt-1"
+                placeholder="Address"
               />
             </div>
+            <Button className="w-full bg-primary hover:bg-blue-700 text-white">Save Changes</Button>
           </div>
         </AnimatedModal>
       </div>

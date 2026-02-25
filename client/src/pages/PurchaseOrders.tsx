@@ -3,7 +3,10 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Eye, Edit, Trash2, Truck, CheckCircle, Clock, AlertCircle, DollarSign } from "lucide-react";
+import { Plus, Search, Eye, Edit, Trash2, Truck, CheckCircle, Clock, AlertCircle, DollarSign, Download, Printer, RotateCcw, Grid3x3, List, MoreVertical } from "lucide-react";
+import AnimatedModal from "@/components/AnimatedModal";
+import BulkActions from "@/components/BulkActions";
+import AdvancedFilters from "@/components/AdvancedFilters";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,256 +15,448 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSettings } from "@/contexts/SettingsContext";
 
+const purchaseOrdersData = [
+  { id: 1, poNo: "PO-2024-001", supplier: "Tech Supplies Inc.", date: "Feb 20, 2024", items: 5, total: "$12,450", status: "delivered", paymentStatus: "paid" },
+  { id: 2, poNo: "PO-2024-002", supplier: "Global Electronics", date: "Feb 18, 2024", items: 3, total: "$8,920", status: "in-transit", paymentStatus: "pending" },
+  { id: 3, poNo: "PO-2024-003", supplier: "Premium Logistics", date: "Feb 15, 2024", items: 8, total: "$15,680", status: "processing", paymentStatus: "pending" },
+  { id: 4, poNo: "PO-2024-004", supplier: "Industrial Parts Co.", date: "Feb 10, 2024", items: 12, total: "$22,340", status: "delivered", paymentStatus: "paid" },
+  { id: 5, poNo: "PO-2024-005", supplier: "Office Supplies Ltd.", date: "Feb 8, 2024", items: 6, total: "$5,200", status: "processing", paymentStatus: "pending" },
+];
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case "delivered":
+      return "bg-green-50 text-green-600";
+    case "in-transit":
+      return "bg-blue-50 text-blue-600";
+    case "processing":
+      return "bg-orange-50 text-orange-600";
+    case "cancelled":
+      return "bg-red-50 text-red-600";
+    default:
+      return "bg-gray-50 text-gray-600";
+  }
+}
+
+function getPaymentStatusColor(status: string) {
+  switch (status) {
+    case "paid":
+      return "bg-green-50 text-green-600";
+    case "pending":
+      return "bg-orange-50 text-orange-600";
+    case "overdue":
+      return "bg-red-50 text-red-600";
+    default:
+      return "bg-gray-50 text-gray-600";
+  }
+}
+
 export default function PurchaseOrders() {
   const { language } = useSettings();
   const isRTL = language === "ar";
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({ poNo: "", supplier: "", date: "", total: "" });
+
+  const totalPages = Math.ceil(purchaseOrdersData.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedData = purchaseOrdersData.slice(startIndex, startIndex + pageSize);
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExport = () => {
+    const csv = [
+      ["PO Number", "Supplier", "Date", "Items", "Total", "Status", "Payment Status"],
+      ...purchaseOrdersData.map(item => [item.poNo, item.supplier, item.date, item.items, item.total, item.status, item.paymentStatus])
+    ].map(row => row.join(",")).join("\n");
+    
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "purchase-orders-export.csv";
+    a.click();
+  };
+
+  const handleReload = () => {
+    window.location.reload();
+  };
 
   const breadcrumbs = [
     { label: "Dashboard", href: "/" },
+    { label: "Purchases", href: "#" },
     { label: "Purchase Orders" },
   ];
-
-  const purchaseOrders = [
-    {
-      id: "PO-2024-001",
-      supplier: "Tech Supplies Inc.",
-      date: "Feb 20, 2024",
-      items: 5,
-      total: "$12,450",
-      status: "Delivered",
-      deliveryDate: "Feb 25, 2024",
-      paymentStatus: "Paid",
-    },
-    {
-      id: "PO-2024-002",
-      supplier: "Global Electronics",
-      date: "Feb 18, 2024",
-      items: 3,
-      total: "$8,920",
-      status: "In Transit",
-      deliveryDate: "Expected: Feb 28, 2024",
-      paymentStatus: "Pending",
-    },
-    {
-      id: "PO-2024-003",
-      supplier: "Premium Logistics",
-      date: "Feb 15, 2024",
-      items: 8,
-      total: "$15,680",
-      status: "Processing",
-      deliveryDate: "Expected: Mar 5, 2024",
-      paymentStatus: "Pending",
-    },
-    {
-      id: "PO-2024-004",
-      supplier: "Industrial Parts Co.",
-      date: "Feb 10, 2024",
-      items: 12,
-      total: "$22,340",
-      status: "Delivered",
-      deliveryDate: "Feb 20, 2024",
-      paymentStatus: "Paid",
-    },
-  ];
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "Delivered":
-        return <CheckCircle size={16} className="text-accent" />;
-      case "In Transit":
-        return <Truck size={16} className="text-primary" />;
-      case "Processing":
-        return <Clock size={16} className="text-orange-500" />;
-      default:
-        return <AlertCircle size={16} className="text-destructive" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Delivered":
-        return "bg-green-50 text-accent";
-      case "In Transit":
-        return "bg-blue-50 text-primary";
-      case "Processing":
-        return "bg-orange-50 text-orange-600";
-      default:
-        return "bg-red-50 text-destructive";
-    }
-  };
 
   return (
     <DashboardLayout currentPage="Purchase Orders" breadcrumbs={breadcrumbs}>
       <div className="space-y-6">
-        {/* Header */}
-        <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-          <div className={isRTL ? "text-right" : ""}>
-            <h2 className="font-display font-bold text-2xl text-foreground">Purchase Orders</h2>
-            <p className="text-sm text-muted-foreground mt-1">Manage supplier orders and deliveries</p>
-          </div>
-          <Button className="bg-primary hover:bg-blue-700 text-white">
-            <Plus size={16} className="mr-2" />
-            New Purchase Order
+        {/* Header Section */}
+        <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${isRTL ? "text-right" : ""}`}>
+          <Button className="bg-primary hover:bg-blue-700 text-white flex items-center gap-2 w-full sm:w-auto">
+            <Plus size={18} />
+            Create Purchase Order
           </Button>
         </div>
 
-        {/* Key Metrics */}
+        {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="p-4 bg-white shadow-sm border-0">
-            <p className="text-xs font-medium text-muted-foreground uppercase">Total POs</p>
-            <h3 className="text-2xl font-bold text-foreground mt-2">24</h3>
-            <p className="text-xs text-muted-foreground mt-1">This month</p>
+            <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
+            <h3 className="text-2xl font-bold text-foreground mt-2">1,245</h3>
+            <p className="text-xs text-muted-foreground mt-2">All time</p>
           </Card>
           <Card className="p-4 bg-white shadow-sm border-0">
-            <p className="text-xs font-medium text-muted-foreground uppercase">Total Spent</p>
-            <h3 className="text-2xl font-bold text-foreground mt-2">$185,420</h3>
-            <p className="text-xs text-accent mt-1">↑ 12% vs last month</p>
+            <p className="text-sm font-medium text-muted-foreground">Processing</p>
+            <h3 className="text-2xl font-bold text-orange-600 mt-2">23</h3>
+            <p className="text-xs text-muted-foreground mt-2">Awaiting delivery</p>
           </Card>
           <Card className="p-4 bg-white shadow-sm border-0">
-            <p className="text-xs font-medium text-muted-foreground uppercase">Pending</p>
-            <h3 className="text-2xl font-bold text-foreground mt-2">8</h3>
-            <p className="text-xs text-orange-600 mt-1">Awaiting delivery</p>
+            <p className="text-sm font-medium text-muted-foreground">Pending Payment</p>
+            <h3 className="text-2xl font-bold text-blue-600 mt-2">15</h3>
+            <p className="text-xs text-muted-foreground mt-2">Outstanding</p>
           </Card>
           <Card className="p-4 bg-white shadow-sm border-0">
-            <p className="text-xs font-medium text-muted-foreground uppercase">Suppliers</p>
-            <h3 className="text-2xl font-bold text-foreground mt-2">12</h3>
-            <p className="text-xs text-muted-foreground mt-1">Active partners</p>
+            <p className="text-sm font-medium text-muted-foreground">Total Value</p>
+            <h3 className="text-2xl font-bold text-primary mt-2">$2.3M</h3>
+            <p className="text-xs text-muted-foreground mt-2">YTD spending</p>
           </Card>
         </div>
 
-        {/* Search & Filter */}
-        <Card className="bg-white shadow-sm border-0 p-4">
-          <div className={`flex gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <div className="flex-1 relative">
-              <Search size={18} className="absolute left-3 top-3 text-muted-foreground" />
-              <Input
-                placeholder="Search purchase orders..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-secondary border-0"
+        {/* Bulk Actions */}
+        {selectedItems.length > 0 && (
+          <BulkActions
+            selectedCount={selectedItems.length}
+            isAllSelected={selectedItems.length === paginatedData.length}
+            onSelectAll={(checked) => {
+              if (checked) {
+                setSelectedItems(paginatedData.map(item => item.id));
+              } else {
+                setSelectedItems([]);
+              }
+            }}
+            onDelete={() => {
+              setSelectedItems([]);
+            }}
+            onExport={() => {
+              handleExport();
+              setSelectedItems([]);
+            }}
+            onStatusUpdate={() => {
+              setSelectedItems([]);
+            }}
+          />
+        )}
+
+        {/* Search and Advanced Controls - Single Row */}
+        <Card className="p-4 bg-white shadow-sm border-0">
+          <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
+            {/* Search Bar */}
+            <div className="relative flex-1 min-w-xs">
+              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-4" : "left-4"}`} />
+              <Input 
+                type="text" 
+                placeholder="Search by PO number or supplier..." 
+                className={`${isRTL ? "pr-12 text-right" : "pl-12"} bg-secondary border-0`} 
               />
             </div>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 bg-secondary border-0 rounded-lg text-foreground"
+
+            {/* Advanced Filters */}
+            <AdvancedFilters
+              onApplyFilters={(filters) => setAppliedFilters(filters)}
+              onClearFilters={() => setAppliedFilters({})}
+              filterOptions={{
+                status: {
+                  label: "Status",
+                  options: ["Delivered", "In Transit", "Processing", "Cancelled"],
+                },
+                paymentStatus: {
+                  label: "Payment Status",
+                  options: ["Paid", "Pending", "Overdue"],
+                },
+              }}
+            />
+
+            {/* Reload Button */}
+            <Button
+              variant="outline"
+              className="border-border"
+              onClick={handleReload}
+              title="Reload data"
             >
-              <option value="all">All Status</option>
-              <option value="delivered">Delivered</option>
-              <option value="in-transit">In Transit</option>
-              <option value="processing">Processing</option>
-            </select>
+              <RotateCcw size={16} />
+            </Button>
+
+            {/* Print Button */}
+            <Button
+              variant="outline"
+              className="border-border"
+              onClick={handlePrint}
+              title="Print table"
+            >
+              <Printer size={16} />
+            </Button>
+
+            {/* Export Button */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="border-border flex items-center gap-2">
+                  <Download size={16} />
+                  <span className="hidden sm:inline">Export</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-48">
+                <DropdownMenuItem onClick={handleExport}>Export as CSV</DropdownMenuItem>
+                <DropdownMenuItem>Export as Excel</DropdownMenuItem>
+                <DropdownMenuItem>Export as PDF</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* View Mode Toggle */}
+            <div className="flex gap-1 border border-border rounded-lg p-1">
+              <button
+                onClick={() => setViewMode("table")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "table"
+                    ? "bg-primary text-white"
+                    : "text-foreground hover:bg-secondary"
+                }`}
+                title="Table view"
+              >
+                <List size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-primary text-white"
+                    : "text-foreground hover:bg-secondary"
+                }`}
+                title="Grid view"
+              >
+                <Grid3x3 size={16} />
+              </button>
+            </div>
           </div>
         </Card>
 
-        {/* Purchase Orders Table */}
-        <Card className="bg-white shadow-sm border-0 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-secondary border-b border-border">
-                  <th className={`px-6 py-3 text-left text-sm font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>
-                    PO Number
-                  </th>
-                  <th className={`px-6 py-3 text-left text-sm font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>
-                    Supplier
-                  </th>
-                  <th className={`px-6 py-3 text-left text-sm font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>
-                    Date
-                  </th>
-                  <th className={`px-6 py-3 text-center text-sm font-semibold text-foreground`}>Items</th>
-                  <th className={`px-6 py-3 text-right text-sm font-semibold text-foreground ${isRTL ? "text-left" : ""}`}>
-                    Total
-                  </th>
-                  <th className={`px-6 py-3 text-left text-sm font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>
-                    Status
-                  </th>
-                  <th className={`px-6 py-3 text-left text-sm font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>
-                    Payment
-                  </th>
-                  <th className={`px-6 py-3 text-center text-sm font-semibold text-foreground`}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {purchaseOrders.map((po) => (
-                  <tr key={po.id} className="border-b border-border hover:bg-secondary transition-colors">
-                    <td className={`px-6 py-4 text-sm font-medium text-primary ${isRTL ? "text-right" : ""}`}>
-                      {po.id}
-                    </td>
-                    <td className={`px-6 py-4 text-sm text-foreground ${isRTL ? "text-right" : ""}`}>
-                      {po.supplier}
-                    </td>
-                    <td className={`px-6 py-4 text-sm text-muted-foreground ${isRTL ? "text-right" : ""}`}>
-                      {po.date}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-foreground text-center">{po.items}</td>
-                    <td className={`px-6 py-4 text-sm font-semibold text-foreground text-right ${isRTL ? "text-left" : ""}`}>
-                      {po.total}
-                    </td>
-                    <td className={`px-6 py-4 ${isRTL ? "text-right" : ""}`}>
-                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(po.status)}`}>
-                        {getStatusIcon(po.status)}
-                        {po.status}
-                      </div>
-                    </td>
-                    <td className={`px-6 py-4 ${isRTL ? "text-right" : ""}`}>
-                      <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
-                        po.paymentStatus === "Paid"
-                          ? "bg-green-50 text-accent"
-                          : "bg-orange-50 text-orange-600"
-                      }`}>
-                        {po.paymentStatus}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            ⋮
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align={isRTL ? "start" : "end"}>
-                          <DropdownMenuItem>View Details</DropdownMenuItem>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Track Delivery</DropdownMenuItem>
-                          <DropdownMenuItem>Record Payment</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">Cancel</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
+        {/* Table View */}
+        {viewMode === "table" && (
+          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-secondary/50">
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.length === paginatedData.length && paginatedData.length > 0}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedItems(paginatedData.map(item => item.id));
+                          } else {
+                            setSelectedItems([]);
+                          }
+                        }}
+                        className="w-4 h-4 rounded border-border"
+                      />
+                    </th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">PO Number</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Supplier</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Date</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Items</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Total</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Status</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Payment</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-center">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+                </thead>
+                <tbody>
+                  {paginatedData.map((item) => (
+                    <tr key={item.id} className="border-b border-border hover:bg-secondary/50 transition-colors">
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedItems([...selectedItems, item.id]);
+                            } else {
+                              setSelectedItems(selectedItems.filter(id => id !== item.id));
+                            }
+                          }}
+                          className="w-4 h-4 rounded border-border"
+                        />
+                      </td>
+                      <td className="px-6 py-4 text-sm text-foreground font-medium">{item.poNo}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.supplier}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.date}</td>
+                      <td className="px-6 py-4 text-sm text-foreground">{item.items}</td>
+                      <td className="px-6 py-4 text-sm text-foreground font-medium">{item.total}</td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                          {item.status.replace("-", " ").charAt(0).toUpperCase() + item.status.replace("-", " ").slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(item.paymentStatus)}`}>
+                          {item.paymentStatus.charAt(0).toUpperCase() + item.paymentStatus.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical size={16} />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align={isRTL ? "start" : "end"}>
+                            <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>Edit</DropdownMenuItem>
+                            <DropdownMenuItem>View Details</DropdownMenuItem>
+                            <DropdownMenuItem>Receive Items</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive">Cancel</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-        {/* Supplier Performance */}
-        <Card className="bg-white shadow-sm border-0 p-6">
-          <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
-            Top Suppliers
-          </h3>
-          <div className="space-y-4">
-            {[
-              { name: "Tech Supplies Inc.", orders: 8, spent: "$45,200", rating: 4.8 },
-              { name: "Global Electronics", orders: 6, spent: "$32,100", rating: 4.5 },
-              { name: "Industrial Parts Co.", orders: 5, spent: "$28,900", rating: 4.7 },
-            ].map((supplier, idx) => (
-              <div key={idx} className={`flex items-center justify-between p-4 border border-border rounded-lg ${isRTL ? "flex-row-reverse" : ""}`}>
-                <div className={isRTL ? "text-right" : ""}>
-                  <p className="font-medium text-foreground">{supplier.name}</p>
-                  <p className="text-xs text-muted-foreground">{supplier.orders} orders • {supplier.spent}</p>
-                </div>
-                <div className={`flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <span className="text-sm font-semibold text-foreground">{supplier.rating}</span>
-                  <span className="text-orange-400">★</span>
-                </div>
+            {/* Pagination */}
+            <div className={`flex items-center justify-between px-6 py-4 border-t border-border ${isRTL ? "flex-row-reverse" : ""}`}>
+              <div className="text-sm text-muted-foreground">
+                Showing {startIndex + 1} to {Math.min(startIndex + pageSize, purchaseOrdersData.length)} of {purchaseOrdersData.length}
               </div>
+              <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-2 border border-border rounded-lg text-sm bg-white text-foreground"
+              >
+                <option value={5}>5 per page</option>
+                <option value={10}>10 per page</option>
+                <option value={25}>25 per page</option>
+                <option value={50}>50 per page</option>
+              </select>
+            </div>
+          </Card>
+        )}
+
+        {/* Grid View */}
+        {viewMode === "grid" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {paginatedData.map((item) => (
+              <Card key={item.id} className="p-4 bg-white shadow-sm border-0">
+                <div className={`flex items-start justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <div className={isRTL ? "text-right" : ""}>
+                    <h3 className="font-semibold text-foreground">{item.poNo}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{item.supplier}</p>
+                    <p className="text-xs text-muted-foreground">{item.date}</p>
+                    <div className="mt-3 space-y-1">
+                      <p className="text-sm font-medium text-foreground">{item.total}</p>
+                      <p className="text-xs text-muted-foreground">Items: {item.items}</p>
+                    </div>
+                  </div>
+                  <div className={`flex flex-col gap-2 ${isRTL ? "items-start" : "items-end"}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                      {item.status.replace("-", " ").charAt(0).toUpperCase() + item.status.replace("-", " ").slice(1)}
+                    </span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(item.paymentStatus)}`}>
+                      {item.paymentStatus.charAt(0).toUpperCase() + item.paymentStatus.slice(1)}
+                    </span>
+                  </div>
+                </div>
+              </Card>
             ))}
           </div>
-        </Card>
+        )}
+
+        {/* Edit Modal */}
+        <AnimatedModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          title="Edit Purchase Order"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">PO Number</label>
+              <Input
+                type="text"
+                value={editFormData.poNo}
+                onChange={(e) => setEditFormData({ ...editFormData, poNo: e.target.value })}
+                placeholder="PO number"
+                disabled
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Supplier</label>
+              <Input
+                type="text"
+                value={editFormData.supplier}
+                onChange={(e) => setEditFormData({ ...editFormData, supplier: e.target.value })}
+                placeholder="Supplier name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Date</label>
+              <Input
+                type="date"
+                value={editFormData.date}
+                onChange={(e) => setEditFormData({ ...editFormData, date: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Total Amount</label>
+              <Input
+                type="text"
+                value={editFormData.total}
+                onChange={(e) => setEditFormData({ ...editFormData, total: e.target.value })}
+                placeholder="Total amount"
+              />
+            </div>
+            <Button className="w-full bg-primary hover:bg-blue-700 text-white">Save Changes</Button>
+          </div>
+        </AnimatedModal>
       </div>
     </DashboardLayout>
   );

@@ -3,8 +3,10 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Edit, Trash2, Shield, Clock, CheckCircle, AlertCircle, Mail, Phone, MapPin } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Shield, Clock, CheckCircle, AlertCircle, Mail, Phone, MapPin, Download, Printer, RotateCcw, Grid3x3, List, MoreVertical } from "lucide-react";
 import AnimatedModal from "@/components/AnimatedModal";
+import BulkActions from "@/components/BulkActions";
+import AdvancedFilters from "@/components/AdvancedFilters";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,258 +15,427 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSettings } from "@/contexts/SettingsContext";
 
+const employeesData = [
+  { id: 1, name: "Sarah Johnson", role: "Sales Manager", department: "Sales", email: "sarah@company.com", phone: "+1 (555) 123-4567", status: "active", joinDate: "Jan 15, 2023" },
+  { id: 2, name: "Michael Chen", role: "Software Developer", department: "IT", email: "michael@company.com", phone: "+1 (555) 234-5678", status: "active", joinDate: "Mar 20, 2023" },
+  { id: 3, name: "Emily Rodriguez", role: "HR Specialist", department: "Human Resources", email: "emily@company.com", phone: "+1 (555) 345-6789", status: "active", joinDate: "Feb 10, 2023" },
+  { id: 4, name: "David Williams", role: "Accountant", department: "Finance", email: "david@company.com", phone: "+1 (555) 456-7890", status: "on-leave", joinDate: "May 5, 2022" },
+  { id: 5, name: "Jessica Lee", role: "Marketing Manager", department: "Marketing", email: "jessica@company.com", phone: "+1 (555) 567-8901", status: "active", joinDate: "Jul 12, 2023" },
+];
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case "active":
+      return "bg-green-50 text-green-600";
+    case "on-leave":
+      return "bg-orange-50 text-orange-600";
+    case "inactive":
+      return "bg-gray-50 text-gray-600";
+    default:
+      return "bg-gray-50 text-gray-600";
+  }
+}
+
 export default function EmployeeManagement() {
   const { language } = useSettings();
   const isRTL = language === "ar";
-  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
   const [editFormData, setEditFormData] = useState({ name: "", email: "", phone: "", role: "", department: "" });
+
+  const totalPages = Math.ceil(employeesData.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedData = employeesData.slice(startIndex, startIndex + pageSize);
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExport = () => {
+    const csv = [
+      ["Employee Name", "Role", "Department", "Email", "Phone", "Status", "Join Date"],
+      ...employeesData.map(item => [item.name, item.role, item.department, item.email, item.phone, item.status, item.joinDate])
+    ].map(row => row.join(",")).join("\n");
+    
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "employees-export.csv";
+    a.click();
+  };
+
+  const handleReload = () => {
+    window.location.reload();
+  };
 
   const breadcrumbs = [
     { label: "Dashboard", href: "/" },
-    { label: "Employee Management" },
-  ];
-
-  const employees = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      role: "Sales Manager",
-      department: "Sales",
-      email: "sarah@company.com",
-      phone: "+1 (555) 123-4567",
-      status: "Active",
-      joinDate: "Jan 15, 2023",
-      avatar: "SJ",
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      role: "Software Developer",
-      department: "IT",
-      email: "michael@company.com",
-      phone: "+1 (555) 234-5678",
-      status: "Active",
-      joinDate: "Mar 20, 2023",
-      avatar: "MC",
-    },
-    {
-      id: 3,
-      name: "Emily Rodriguez",
-      role: "HR Specialist",
-      department: "Human Resources",
-      email: "emily@company.com",
-      phone: "+1 (555) 345-6789",
-      status: "Active",
-      joinDate: "Feb 10, 2023",
-      avatar: "ER",
-    },
-    {
-      id: 4,
-      name: "David Williams",
-      role: "Accountant",
-      department: "Finance",
-      email: "david@company.com",
-      phone: "+1 (555) 456-7890",
-      status: "On Leave",
-      joinDate: "May 5, 2022",
-      avatar: "DW",
-    },
-  ];
-
-  const permissions = [
-    { id: 1, name: "View Dashboard", category: "Dashboard" },
-    { id: 2, name: "Manage Orders", category: "Orders" },
-    { id: 3, name: "Manage Inventory", category: "Inventory" },
-    { id: 4, name: "View Analytics", category: "Analytics" },
-    { id: 5, name: "Manage Users", category: "Admin" },
-    { id: 6, name: "View Reports", category: "Reports" },
+    { label: "Settings", href: "#" },
+    { label: "Users" },
   ];
 
   return (
-    <DashboardLayout currentPage="Employee Management" breadcrumbs={breadcrumbs}>
+    <DashboardLayout currentPage="Users" breadcrumbs={breadcrumbs}>
       <div className="space-y-6">
-        {/* Header */}
-        <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-          <div className={isRTL ? "text-right" : ""}>
-            <h2 className="font-display font-bold text-2xl text-foreground">Employee Management</h2>
-            <p className="text-sm text-muted-foreground mt-1">Manage team members, roles, and permissions</p>
-          </div>
-          <Button className="bg-primary hover:bg-blue-700 text-white">
-            <Plus size={16} className="mr-2" />
+        {/* Header Section */}
+        <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${isRTL ? "text-right" : ""}`}>
+          <Button className="bg-primary hover:bg-blue-700 text-white flex items-center gap-2 w-full sm:w-auto">
+            <Plus size={18} />
             Add Employee
           </Button>
         </div>
 
-        {/* Search & Filter */}
-        <Card className="bg-white shadow-sm border-0 p-4">
-          <div className={`flex gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <div className="flex-1 relative">
-              <Search size={18} className="absolute left-3 top-3 text-muted-foreground" />
-              <Input
-                placeholder="Search employees..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-secondary border-0"
-              />
-            </div>
-            <Button variant="outline" className="border-border">
-              Filter
-            </Button>
-          </div>
-        </Card>
-
-        {/* Employees Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {employees.map((employee) => (
-            <Card key={employee.id} className="bg-white shadow-sm border-0 p-6 hover:shadow-md transition-shadow">
-              {/* Header */}
-              <div className={`flex items-start justify-between mb-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-                <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-700 rounded-full flex items-center justify-center text-white font-bold">
-                    {employee.avatar}
-                  </div>
-                  <div className={isRTL ? "text-right" : ""}>
-                    <p className="font-semibold text-foreground">{employee.name}</p>
-                    <p className="text-xs text-muted-foreground">{employee.role}</p>
-                  </div>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      ⋮
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align={isRTL ? "start" : "end"}>
-                    <DropdownMenuItem onClick={() => {
-                      setSelectedEmployee(employee);
-                      setEditFormData({ name: employee.name, email: employee.email, phone: employee.phone, role: employee.role, department: employee.department });
-                      setIsEditModalOpen(true);
-                    }}>Edit</DropdownMenuItem>
-                    <DropdownMenuItem>View Details</DropdownMenuItem>
-                    <DropdownMenuItem>Manage Permissions</DropdownMenuItem>
-                    <DropdownMenuItem className="text-destructive">Remove</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              {/* Status Badge */}
-              <div className="mb-4">
-                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
-                  employee.status === "Active"
-                    ? "bg-green-50 text-accent"
-                    : "bg-orange-50 text-orange-600"
-                }`}>
-                  <div className={`w-2 h-2 rounded-full ${employee.status === "Active" ? "bg-accent" : "bg-orange-600"}`}></div>
-                  {employee.status}
-                </div>
-              </div>
-
-              {/* Details */}
-              <div className={`space-y-3 border-t border-border pt-4 ${isRTL ? "text-right" : ""}`}>
-                <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <Mail size={14} className="text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground truncate">{employee.email}</p>
-                </div>
-                <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <Phone size={14} className="text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground">{employee.phone}</p>
-                </div>
-                <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <Clock size={14} className="text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground">Joined {employee.joinDate}</p>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className={`flex gap-2 mt-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-                <Button variant="outline" size="sm" className="flex-1 border-border">
-                  <Edit size={14} className="mr-1" />
-                  Edit
-                </Button>
-                <Button variant="outline" size="sm" className="flex-1 border-border">
-                  <Shield size={14} className="mr-1" />
-                  Permissions
-                </Button>
-              </div>
-            </Card>
-          ))}
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">Total Employees</p>
+            <h3 className="text-2xl font-bold text-foreground mt-2">245</h3>
+            <p className="text-xs text-muted-foreground mt-2">Active staff</p>
+          </Card>
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">On Leave</p>
+            <h3 className="text-2xl font-bold text-orange-600 mt-2">12</h3>
+            <p className="text-xs text-muted-foreground mt-2">Currently away</p>
+          </Card>
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">New This Month</p>
+            <h3 className="text-2xl font-bold text-green-600 mt-2">8</h3>
+            <p className="text-xs text-muted-foreground mt-2">Recent hires</p>
+          </Card>
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">Departments</p>
+            <h3 className="text-2xl font-bold text-primary mt-2">12</h3>
+            <p className="text-xs text-muted-foreground mt-2">Across company</p>
+          </Card>
         </div>
 
-        {/* Permissions Reference */}
-        <Card className="bg-white shadow-sm border-0 p-6">
-          <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
-            Available Permissions
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {permissions.map((perm) => (
-              <div key={perm.id} className={`p-3 border border-border rounded-lg ${isRTL ? "text-right" : ""}`}>
-                <p className="text-xs font-semibold text-muted-foreground uppercase">{perm.category}</p>
-                <p className="text-sm font-medium text-foreground mt-1">{perm.name}</p>
-              </div>
-            ))}
+        {/* Bulk Actions */}
+        {selectedItems.length > 0 && (
+          <BulkActions
+            selectedCount={selectedItems.length}
+            isAllSelected={selectedItems.length === paginatedData.length}
+            onSelectAll={(checked) => {
+              if (checked) {
+                setSelectedItems(paginatedData.map(item => item.id));
+              } else {
+                setSelectedItems([]);
+              }
+            }}
+            onDelete={() => {
+              setSelectedItems([]);
+            }}
+            onExport={() => {
+              handleExport();
+              setSelectedItems([]);
+            }}
+            onStatusUpdate={() => {
+              setSelectedItems([]);
+            }}
+          />
+        )}
+
+        {/* Search and Advanced Controls - Single Row */}
+        <Card className="p-4 bg-white shadow-sm border-0">
+          <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
+            {/* Search Bar */}
+            <div className="relative flex-1 min-w-xs">
+              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-4" : "left-4"}`} />
+              <Input 
+                type="text" 
+                placeholder="Search by name or email..." 
+                className={`${isRTL ? "pr-12 text-right" : "pl-12"} bg-secondary border-0`} 
+              />
+            </div>
+
+            {/* Advanced Filters */}
+            <AdvancedFilters
+              onApplyFilters={(filters) => setAppliedFilters(filters)}
+              onClearFilters={() => setAppliedFilters({})}
+              filterOptions={{
+                status: {
+                  label: "Status",
+                  options: ["Active", "On Leave", "Inactive"],
+                },
+                department: {
+                  label: "Department",
+                  options: ["Sales", "IT", "HR", "Finance", "Marketing"],
+                },
+              }}
+            />
+
+            {/* Reload Button */}
+            <Button
+              variant="outline"
+              className="border-border"
+              onClick={handleReload}
+              title="Reload data"
+            >
+              <RotateCcw size={16} />
+            </Button>
+
+            {/* Print Button */}
+            <Button
+              variant="outline"
+              className="border-border"
+              onClick={handlePrint}
+              title="Print table"
+            >
+              <Printer size={16} />
+            </Button>
+
+            {/* Export Button */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="border-border flex items-center gap-2">
+                  <Download size={16} />
+                  <span className="hidden sm:inline">Export</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-48">
+                <DropdownMenuItem onClick={handleExport}>Export as CSV</DropdownMenuItem>
+                <DropdownMenuItem>Export as Excel</DropdownMenuItem>
+                <DropdownMenuItem>Export as PDF</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* View Mode Toggle */}
+            <div className="flex gap-1 border border-border rounded-lg p-1">
+              <button
+                onClick={() => setViewMode("table")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "table"
+                    ? "bg-primary text-white"
+                    : "text-foreground hover:bg-secondary"
+                }`}
+                title="Table view"
+              >
+                <List size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-primary text-white"
+                    : "text-foreground hover:bg-secondary"
+                }`}
+                title="Grid view"
+              >
+                <Grid3x3 size={16} />
+              </button>
+            </div>
           </div>
         </Card>
 
-        {/* Edit Employee Modal */}
+        {/* Table View */}
+        {viewMode === "table" && (
+          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-secondary/50">
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.length === paginatedData.length && paginatedData.length > 0}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedItems(paginatedData.map(item => item.id));
+                          } else {
+                            setSelectedItems([]);
+                          }
+                        }}
+                        className="w-4 h-4 rounded border-border"
+                      />
+                    </th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Employee Name</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Role</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Department</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Email</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Status</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Join Date</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedData.map((item) => (
+                    <tr key={item.id} className="border-b border-border hover:bg-secondary/50 transition-colors">
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedItems([...selectedItems, item.id]);
+                            } else {
+                              setSelectedItems(selectedItems.filter(id => id !== item.id));
+                            }
+                          }}
+                          className="w-4 h-4 rounded border-border"
+                        />
+                      </td>
+                      <td className="px-6 py-4 text-sm text-foreground font-medium">{item.name}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.role}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.department}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.email}</td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                          {item.status === "on-leave" ? "On Leave" : item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.joinDate}</td>
+                      <td className="px-6 py-4 text-center">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical size={16} />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align={isRTL ? "start" : "end"}>
+                            <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>Edit</DropdownMenuItem>
+                            <DropdownMenuItem>View Details</DropdownMenuItem>
+                            <DropdownMenuItem>Send Email</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className={`flex items-center justify-between px-6 py-4 border-t border-border ${isRTL ? "flex-row-reverse" : ""}`}>
+              <div className="text-sm text-muted-foreground">
+                Showing {startIndex + 1} to {Math.min(startIndex + pageSize, employeesData.length)} of {employeesData.length}
+              </div>
+              <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-2 border border-border rounded-lg text-sm bg-white text-foreground"
+              >
+                <option value={5}>5 per page</option>
+                <option value={10}>10 per page</option>
+                <option value={25}>25 per page</option>
+                <option value={50}>50 per page</option>
+              </select>
+            </div>
+          </Card>
+        )}
+
+        {/* Grid View */}
+        {viewMode === "grid" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {paginatedData.map((item) => (
+              <Card key={item.id} className="p-4 bg-white shadow-sm border-0">
+                <div className={`flex items-start justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <div className={isRTL ? "text-right" : ""}>
+                    <h3 className="font-semibold text-foreground">{item.name}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{item.role}</p>
+                    <p className="text-xs text-muted-foreground">{item.department}</p>
+                    <p className="text-xs text-muted-foreground mt-2">{item.email}</p>
+                    <p className="text-xs text-muted-foreground">Joined: {item.joinDate}</p>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                    {item.status === "on-leave" ? "On Leave" : item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                  </span>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Edit Modal */}
         <AnimatedModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           title="Edit Employee"
-          onSubmit={() => {
-            setIsEditModalOpen(false);
-          }}
-          submitLabel="Update Employee"
-          size="md"
         >
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-foreground">Full Name</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Name</label>
               <Input
-                placeholder="Enter full name"
+                type="text"
                 value={editFormData.name}
                 onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                className="mt-1"
+                placeholder="Employee name"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground">Email</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Email</label>
               <Input
                 type="email"
-                placeholder="Enter email address"
                 value={editFormData.email}
                 onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
-                className="mt-1"
+                placeholder="Email address"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground">Phone</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Phone</label>
               <Input
-                placeholder="Enter phone number"
+                type="tel"
                 value={editFormData.phone}
                 onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                className="mt-1"
+                placeholder="Phone number"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground">Role</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Role</label>
               <Input
-                placeholder="Enter job role"
+                type="text"
                 value={editFormData.role}
                 onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
-                className="mt-1"
+                placeholder="Job role"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground">Department</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Department</label>
               <Input
-                placeholder="Enter department"
+                type="text"
                 value={editFormData.department}
                 onChange={(e) => setEditFormData({ ...editFormData, department: e.target.value })}
-                className="mt-1"
+                placeholder="Department"
               />
             </div>
+            <Button className="w-full bg-primary hover:bg-blue-700 text-white">Save Changes</Button>
           </div>
         </AnimatedModal>
       </div>

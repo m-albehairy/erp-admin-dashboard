@@ -53,11 +53,22 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
 
   const navItems: NavItem[] = [
     { name: "Dashboard", icon: "📊", href: "/" },
-    { name: "Inventory", icon: "📦", href: "/inventory" },
-    { name: "Analytics", icon: "📈", href: "/analytics" },
     { name: "SALES", icon: "", isHeader: true },
     {
-      name: "Orders",
+      name: "Customers",
+      icon: "👥",
+      submenu: [
+        { name: "All Customers", icon: "👥", href: "/customer-details" },
+        { name: "Customer Groups", icon: "👫", href: "/customer-details" },
+      ],
+    },
+    {
+      name: "Quotations",
+      icon: "📝",
+      href: "/quotations",
+    },
+    {
+      name: "Sales Orders",
       icon: "🛒",
       submenu: [
         { name: "All Orders", icon: "📋", href: "/order-details" },
@@ -66,15 +77,60 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       ],
     },
     {
-      name: "Customers",
-      icon: "👥",
+      name: "Sales Invoices",
+      icon: "🧾",
+      href: "/sales-invoices",
+    },
+    {
+      name: "Sales Returns",
+      icon: "↩️",
+      href: "/sales-returns",
+    },
+    {
+      name: "Customer Receipts",
+      icon: "💳",
+      href: "/customer-receipts",
+    },
+    {
+      name: "Customer Statements",
+      icon: "📊",
+      href: "/customer-statements",
+    },
+    { name: "PURCHASES", icon: "", isHeader: true },
+    {
+      name: "Vendors",
+      icon: "🏪",
       submenu: [
-        { name: "All Customers", icon: "👥", href: "/customer-details" },
-        { name: "Active", icon: "✨", href: "/customer-details" },
-        { name: "Inactive", icon: "🔒", href: "/customer-details" },
+        { name: "All Vendors", icon: "🏪", href: "/vendors" },
+        { name: "Vendor Groups", icon: "🏢", href: "/vendors" },
       ],
     },
-    { name: "OPERATIONS", icon: "", isHeader: true },
+    {
+      name: "Purchase Orders",
+      icon: "📦",
+      href: "/purchase-orders",
+    },
+    {
+      name: "Purchase Invoices",
+      icon: "🧾",
+      href: "/purchase-invoices",
+    },
+    {
+      name: "Purchase Returns",
+      icon: "↩️",
+      href: "/purchase-returns",
+    },
+    {
+      name: "Vendor Payments",
+      icon: "💰",
+      href: "/vendor-payments",
+    },
+    {
+      name: "Vendor Statements",
+      icon: "📋",
+      href: "/vendor-statements",
+    },
+    { name: "INVENTORY", icon: "", isHeader: true },
     {
       name: "Products",
       icon: "📦",
@@ -85,29 +141,233 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       ],
     },
     {
-      name: "Purchase Orders",
-      icon: "🛍️",
-      href: "/purchase-orders",
+      name: "Product Categories",
+      icon: "🏷️",
+      href: "/product-categories",
     },
     {
-      name: "Employees",
-      icon: "👤",
-      href: "/employees",
+      name: "Units of Measure",
+      icon: "📏",
+      href: "/units-of-measure",
     },
-    { name: "REPORTS & ANALYTICS", icon: "", isHeader: true },
     {
-      name: "Reports",
+      name: "Warehouses",
+      icon: "🏭",
+      href: "/warehouses",
+    },
+    {
+      name: "Opening Stock",
+      icon: "📊",
+      href: "/opening-stock",
+    },
+    {
+      name: "Stock Adjustments",
+      icon: "⚙️",
+      href: "/stock-adjustments",
+    },
+    {
+      name: "Stock Transfers",
+      icon: "🔄",
+      href: "/stock-transfers",
+    },
+    {
+      name: "Stock Count",
+      icon: "📝",
+      href: "/stock-count",
+    },
+    {
+      name: "Inventory Valuation",
+      icon: "💹",
+      href: "/inventory-valuation",
+    },
+    {
+      name: "Stock Movement Report",
+      icon: "📈",
+      href: "/stock-movement",
+    },
+    { name: "ACCOUNTING", icon: "", isHeader: true },
+    {
+      name: "Chart of Accounts",
       icon: "📋",
-      submenu: [
-        { name: "Sales Report", icon: "💹", href: "/reports" },
-        { name: "Inventory Report", icon: "📦", href: "/reports" },
-        { name: "Customer Report", icon: "👥", href: "/reports" },
-      ],
+      href: "/chart-of-accounts",
     },
     {
-      name: "Financial",
+      name: "Journal Entries",
+      icon: "📝",
+      href: "/journal-entries",
+    },
+    {
+      name: "Journal Types",
+      icon: "🏷️",
+      href: "/journal-types",
+    },
+    {
+      name: "Opening Balances",
+      icon: "⚖️",
+      href: "/opening-balances",
+    },
+    {
+      name: "Fiscal Years",
+      icon: "📅",
+      href: "/fiscal-years",
+    },
+    {
+      name: "Period Closing",
+      icon: "🔒",
+      href: "/period-closing",
+    },
+    {
+      name: "Account Statements",
+      icon: "📊",
+      href: "/account-statements",
+    },
+    {
+      name: "Trial Balance",
+      icon: "⚖️",
+      href: "/trial-balance",
+    },
+    {
+      name: "General Ledger",
+      icon: "📖",
+      href: "/general-ledger",
+    },
+    {
+      name: "Income Statement",
+      icon: "📈",
+      href: "/income-statement",
+    },
+    {
+      name: "Balance Sheet",
+      icon: "📊",
+      href: "/balance-sheet",
+    },
+    {
+      name: "Cash Flow Statement",
+      icon: "💵",
+      href: "/cash-flow",
+    },
+    { name: "TREASURY", icon: "", isHeader: true },
+    {
+      name: "Cash Accounts",
+      icon: "💵",
+      href: "/cash-accounts",
+    },
+    {
+      name: "Bank Accounts",
+      icon: "🏦",
+      href: "/bank-accounts",
+    },
+    {
+      name: "Receipts",
+      icon: "💳",
+      href: "/receipts",
+    },
+    {
+      name: "Payments",
+      icon: "💸",
+      href: "/payments",
+    },
+    {
+      name: "Bank Transfers",
+      icon: "🔄",
+      href: "/bank-transfers",
+    },
+    {
+      name: "Bank Reconciliation",
+      icon: "✓",
+      href: "/bank-reconciliation",
+    },
+    { name: "REPORTS", icon: "", isHeader: true },
+    {
+      name: "Sales Reports",
+      icon: "📊",
+      href: "/sales-reports",
+    },
+    {
+      name: "Purchase Reports",
+      icon: "📊",
+      href: "/purchase-reports",
+    },
+    {
+      name: "Inventory Reports",
+      icon: "📦",
+      href: "/inventory-reports",
+    },
+    {
+      name: "Financial Reports",
+      icon: "💹",
+      href: "/financial-reports",
+    },
+    {
+      name: "Aging Reports",
+      icon: "📈",
+      href: "/aging-reports",
+    },
+    {
+      name: "Tax Reports",
+      icon: "🧾",
+      href: "/tax-reports",
+    },
+    { name: "SETTINGS", icon: "", isHeader: true },
+    {
+      name: "Company Profile",
+      icon: "🏢",
+      href: "/settings",
+    },
+    {
+      name: "Branches",
+      icon: "🏪",
+      href: "/branches",
+    },
+    {
+      name: "Currencies",
+      icon: "💱",
+      href: "/currencies",
+    },
+    {
+      name: "Exchange Rates",
+      icon: "📊",
+      href: "/exchange-rates",
+    },
+    {
+      name: "Taxes",
+      icon: "🧾",
+      href: "/taxes",
+    },
+    {
+      name: "Numbering Series",
+      icon: "🔢",
+      href: "/numbering-series",
+    },
+    {
+      name: "Payment Methods",
+      icon: "💳",
+      href: "/payment-methods",
+    },
+    {
+      name: "Price Lists",
       icon: "💰",
-      href: "/financial",
+      href: "/price-lists",
+    },
+    {
+      name: "Cost Centers",
+      icon: "📍",
+      href: "/cost-centers",
+    },
+    {
+      name: "Users",
+      icon: "👤",
+      href: "/users",
+    },
+    {
+      name: "Roles & Permissions",
+      icon: "🔐",
+      href: "/roles-permissions",
+    },
+    {
+      name: "Audit Logs",
+      icon: "📋",
+      href: "/audit-logs",
     },
   ];
 
@@ -123,7 +383,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
     return items.map((item) => {
       if (item.isHeader) {
         return (
-          <div key={item.name} className={`py-3 px-4 ${sidebarOpen ? "" : "hidden"}`}>
+          <div key={item.name} className={`py-3 px-4 ${sidebarOpen || sidebarHovered ? "" : "hidden"}`}>
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{item.name}</p>
           </div>
         );
@@ -173,6 +433,54 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
     });
   };
 
+  const colorMap: { [key: string]: string } = {
+    red: "#EF4444",
+    blue: "#3B82F6",
+    green: "#10B981",
+    purple: "#A855F7",
+    orange: "#F97316",
+    pink: "#EC4899",
+    teal: "#14B8A6",
+    indigo: "#6366F1",
+    cyan: "#06B6D4",
+    amber: "#F59E0B",
+    rose: "#F43F5E",
+    slate: "#64748B",
+    darkgreen: "#25671E",
+    darkred: "#280905",
+    darkblue: "#0D1A63",
+    black: "#090040",
+    maroon: "#3A0519",
+    darkgray: "#2C3930",
+    navy: "#09122C",
+    darkpurple: "#2E073F",
+    darkslate: "#17153B",
+  };
+
+  const colors = [
+    { name: "Red", value: "red" },
+    { name: "Blue", value: "blue" },
+    { name: "Green", value: "green" },
+    { name: "Purple", value: "purple" },
+    { name: "Orange", value: "orange" },
+    { name: "Pink", value: "pink" },
+    { name: "Teal", value: "teal" },
+    { name: "Indigo", value: "indigo" },
+    { name: "Cyan", value: "cyan" },
+    { name: "Amber", value: "amber" },
+    { name: "Rose", value: "rose" },
+    { name: "Slate", value: "slate" },
+    { name: "Dark Green", value: "darkgreen" },
+    { name: "Dark Red", value: "darkred" },
+    { name: "Dark Blue", value: "darkblue" },
+    { name: "Black", value: "black" },
+    { name: "Maroon", value: "maroon" },
+    { name: "Dark Gray", value: "darkgray" },
+    { name: "Navy", value: "navy" },
+    { name: "Dark Purple", value: "darkpurple" },
+    { name: "Dark Slate", value: "darkslate" },
+  ];
+
   return (
     <div className={`flex h-screen bg-background ${isRTL ? "rtl" : "ltr"}`} dir={isRTL ? "rtl" : "ltr"}>
       {/* Sidebar */}
@@ -181,10 +489,10 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
         onMouseLeave={() => setSidebarHovered(false)}
         className={`${
           sidebarOpen || sidebarHovered ? (isRTL ? "w-64" : "w-64") : "w-20"
-        } bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out flex flex-col ${isRTL ? "border-r-0 border-l" : ""}`}
+        } bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out flex flex-col overflow-y-auto ${isRTL ? "border-r-0 border-l" : ""}`}
       >
         {/* Logo Section */}
-        <div className={`p-6 border-b border-sidebar-border space-y-4 ${isRTL ? "text-right" : ""}`}>
+        <div className={`p-6 border-b border-sidebar-border space-y-4 ${isRTL ? "text-right" : ""} flex-shrink-0`}>
           <Link href="/" className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-lg">
               E
@@ -198,40 +506,24 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                 <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
                   AC
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-sidebar-foreground truncate">Acme Corp</p>
-                  <p className="text-xs text-muted-foreground truncate">Premium Plan</p>
+                <div className={isRTL ? "text-right" : ""}>
+                  <p className="text-sm font-semibold text-foreground">Acme Corp</p>
+                  <p className="text-xs text-muted-foreground">Premium Plan</p>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Navigation Items */}
-        <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+        {/* Menu Items */}
+        <nav className="flex-1 overflow-y-auto space-y-1 px-3 py-4">
           {renderNavItems(navItems)}
-
-          {/* Separator with Title */}
-          {(sidebarOpen || sidebarHovered) && (
-            <div className="py-4 px-4">
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-px bg-sidebar-border"></div>
-                <span className="text-xs font-semibold text-muted-foreground uppercase">Settings</span>
-                <div className="flex-1 h-px bg-sidebar-border"></div>
-              </div>
-            </div>
-          )}
-
-          <Link href="/settings" className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors text-sm ${isRTL ? "flex-row-reverse" : ""}`}>
-            <Settings size={18} />
-            {(sidebarOpen || sidebarHovered) && <span>Settings</span>}
-          </Link>
         </nav>
 
-        {/* Footer Section */}
-        <div className={`p-4 border-t border-sidebar-border space-y-2 ${isRTL ? "text-right" : ""}`}>
-          <button className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors text-sm ${isRTL ? "flex-row-reverse" : ""}`}>
-            <LogOut size={18} />
+        {/* Logout Button */}
+        <div className={`p-4 border-t border-sidebar-border mt-auto flex-shrink-0 ${isRTL ? "text-right" : ""}`}>
+          <button className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-sidebar-accent/50 hover:scale-105 hover:translate-x-1 ${isRTL ? "flex-row-reverse" : ""}`}>
+            <LogOut size={16} />
             {(sidebarOpen || sidebarHovered) && <span>Logout</span>}
           </button>
         </div>
@@ -239,70 +531,68 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Navbar */}
-        <header className="bg-white border-b border-border shadow-sm">
-          <div className={`px-6 py-4 flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
+        {/* Navbar */}
+        <nav className="bg-white border-b border-border shadow-sm">
+          <div className={`flex items-center justify-between px-6 py-4 ${isRTL ? "flex-row-reverse" : ""}`}>
             {/* Left Section */}
             <div className={`flex items-center gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-              <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
-              >
+              <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-secondary rounded-lg transition-colors">
                 {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
-              <h1 className="font-display font-bold text-xl text-foreground hidden sm:block">{currentPage}</h1>
-            </div>
-
-            {/* Center Search */}
-            <div className="hidden md:flex flex-1 max-w-md mx-4">
-              <div className="relative w-full">
-                <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-3" : "left-3"}`} />
+              <div className="relative hidden sm:block">
+                <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground ${isRTL ? "right-3" : "left-3"}`} />
                 <Input
                   type="text"
                   placeholder="Search..."
-                  className={`${isRTL ? "pr-10 text-right" : "pl-10"} bg-secondary border-0 rounded-lg focus:ring-2 focus:ring-primary`}
+                  className={`${isRTL ? "pr-10 text-right" : "pl-10"} bg-secondary border-0 rounded-lg focus:ring-2 focus:ring-primary w-64`}
                 />
               </div>
             </div>
 
-            {/* Right Section - Icons */}
-            <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+            {/* Right Section */}
+            <div className={`flex items-center gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
               {/* Language Selector */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
-                    <Globe size={18} />
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <Globe size={16} />
+                    <span className="hidden sm:inline text-xs">{language.toUpperCase()}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align={isRTL ? "start" : "end"}>
                   {["en", "es", "fr", "de", "zh", "ar"].map((lang) => (
                     <DropdownMenuItem key={lang} onClick={() => setLanguage(lang)}>
-                      {lang === "en" ? "English" : lang === "es" ? "Español" : lang === "fr" ? "Français" : lang === "de" ? "Deutsch" : lang === "zh" ? "中文" : "العربية"}
+                      {lang === "en" && "English"}
+                      {lang === "es" && "Español"}
+                      {lang === "fr" && "Français"}
+                      {lang === "de" && "Deutsch"}
+                      {lang === "zh" && "中文"}
+                      {lang === "ar" && "العربية"}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
 
               {/* Fullscreen */}
-              <Button variant="ghost" size="sm" className="h-9 w-9 p-0" onClick={toggleFullscreen}>
-                <Maximize2 size={18} />
+              <Button variant="ghost" size="sm" onClick={toggleFullscreen}>
+                <Maximize2 size={16} />
               </Button>
 
               {/* Theme Toggle */}
-              <Button variant="ghost" size="sm" className="h-9 w-9 p-0" onClick={toggleTheme}>
-                {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+              <Button variant="ghost" size="sm" onClick={toggleTheme}>
+                {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
               </Button>
 
               {/* Financial Year */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-9 px-3 gap-2">
+                  <Button variant="ghost" size="sm" className="gap-2">
                     <Calendar size={16} />
-                    <span className="text-sm">FY: {financialYear}</span>
+                    <span className="hidden sm:inline text-xs">FY: {financialYear}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align={isRTL ? "start" : "end"}>
-                  {["2025-2026", "2024-2025", "2023-2024"].map((year) => (
+                  {["2025-2026", "2024-2025", "2023-2024", "2022-2023"].map((year) => (
                     <DropdownMenuItem key={year} onClick={() => setFinancialYear(year)}>
                       {year}
                     </DropdownMenuItem>
@@ -310,141 +600,85 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Theme Color Selector */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
-                    <div className="w-5 h-5 rounded-full bg-primary"></div>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-48">
-                  <div className="px-2 py-2">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Theme Color</p>
-                    <div className="grid grid-cols-4 gap-2">
-                      {["blue", "purple", "green", "orange", "red", "pink", "teal", "indigo", "cyan", "amber", "rose", "slate", "darkgreen", "darkred", "darkblue", "black", "maroon", "darkgray", "navy", "darkpurple"].map((color) => {
-                        const colorMap: Record<string, string> = {
-                          blue: "#0066CC",
-                          purple: "#7C3AED",
-                          green: "#10B981",
-                          orange: "#F97316",
-                          red: "#EF4444",
-                          pink: "#EC4899",
-                          teal: "#14B8A6",
-                          indigo: "#4F46E5",
-                          cyan: "#06B6D4",
-                          amber: "#F59E0B",
-                          rose: "#F43F5E",
-                          slate: "#64748B",
-                          darkgreen: "#25671E",
-                          darkred: "#280905",
-                          darkblue: "#0D1A63",
-                          black: "#090040",
-                          maroon: "#3A0519",
-                          darkgray: "#2C3930",
-                          navy: "#09122C",
-                          darkpurple: "#2E073F",
-                        };
-                        return (
-                          <button
-                            key={color}
-                            onClick={() => {
-                              const colors: Record<string, { primary: string; sidebar: string; chart: string[] }> = {
-                                blue: { primary: "#0066CC", sidebar: "#0052A3", chart: ["#3B82F6", "#0066CC", "#0052A3", "#003D7A", "#002E5C"] },
-                                purple: { primary: "#7C3AED", sidebar: "#6D28D9", chart: ["#A78BFA", "#7C3AED", "#6D28D9", "#5B21B6", "#4C1D95"] },
-                                green: { primary: "#10B981", sidebar: "#059669", chart: ["#6EE7B7", "#10B981", "#059669", "#047857", "#065F46"] },
-                                orange: { primary: "#F97316", sidebar: "#EA580C", chart: ["#FDBA74", "#F97316", "#EA580C", "#C2410C", "#92220C"] },
-                                red: { primary: "#EF4444", sidebar: "#DC2626", chart: ["#FCA5A5", "#EF4444", "#DC2626", "#B91C1C", "#7F1D1D"] },
-                                pink: { primary: "#EC4899", sidebar: "#DB2777", chart: ["#F472B6", "#EC4899", "#DB2777", "#BE185D", "#831843"] },
-                                teal: { primary: "#14B8A6", sidebar: "#0D9488", chart: ["#5EEAD4", "#14B8A6", "#0D9488", "#0F766E", "#134E4A"] },
-                                indigo: { primary: "#4F46E5", sidebar: "#4338CA", chart: ["#A5B4FC", "#4F46E5", "#4338CA", "#3730A3", "#312E81"] },
-                                cyan: { primary: "#06B6D4", sidebar: "#0891B2", chart: ["#22D3EE", "#06B6D4", "#0891B2", "#0E7490", "#164E63"] },
-                                amber: { primary: "#F59E0B", sidebar: "#D97706", chart: ["#FCD34D", "#F59E0B", "#D97706", "#B45309", "#78350F"] },
-                                rose: { primary: "#F43F5E", sidebar: "#E11D48", chart: ["#FB7185", "#F43F5E", "#E11D48", "#BE185D", "#831843"] },
-                                slate: { primary: "#64748B", sidebar: "#475569", chart: ["#CBD5E1", "#64748B", "#475569", "#334155", "#1E293B"] },
-                                darkgreen: { primary: "#25671E", sidebar: "#1F5217", chart: ["#4A9D3F", "#25671E", "#1F5217", "#184010", "#122B0A"] },
-                                darkred: { primary: "#280905", sidebar: "#1F0704", chart: ["#5C1812", "#280905", "#1F0704", "#160503", "#0D0302"] },
-                                darkblue: { primary: "#0D1A63", sidebar: "#0A1350", chart: ["#1A3A9E", "#0D1A63", "#0A1350", "#070D3D", "#050829"] },
-                                black: { primary: "#090040", sidebar: "#070032", chart: ["#1A0080", "#090040", "#070032", "#050025", "#030018"] },
-                                maroon: { primary: "#3A0519", sidebar: "#2E0413", chart: ["#6B0A2E", "#3A0519", "#2E0413", "#22030D", "#160209"] },
-                                darkgray: { primary: "#2C3930", sidebar: "#242E26", chart: ["#556B61", "#2C3930", "#242E26", "#1A211D", "#121816"] },
-                                navy: { primary: "#09122C", sidebar: "#070D22", chart: ["#121E58", "#09122C", "#070D22", "#050819", "#030510"] },
-                                darkpurple: { primary: "#2E073F", sidebar: "#250532", chart: ["#5C0E7E", "#2E073F", "#250532", "#1A0424", "#110219"] },
-                              };
-                              const c = colors[color];
-                              document.documentElement.style.setProperty("--primary", c.primary);
-                              document.documentElement.style.setProperty("--sidebar-primary", c.sidebar);
-                              document.documentElement.style.setProperty("--chart-1", c.chart[0]);
-                              document.documentElement.style.setProperty("--chart-2", c.chart[1]);
-                              document.documentElement.style.setProperty("--chart-3", c.chart[2]);
-                              document.documentElement.style.setProperty("--chart-4", c.chart[3]);
-                              document.documentElement.style.setProperty("--chart-5", c.chart[4]);
-                            }}
-                            className="w-8 h-8 rounded-full border-2 border-border hover:border-foreground transition-all"
-                            style={{ backgroundColor: colorMap[color] }}
-                            title={color}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
               {/* Notifications */}
               <NotificationCenter />
 
-              {/* Settings */}
-              <Link href="/settings">
-                <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
-                  <Settings size={18} />
-                </Button>
-              </Link>
-
-              {/* Profile Dropdown */}
+              {/* Theme Color Selector */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-9 w-9 p-0 rounded-full bg-primary text-white hover:bg-blue-700">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-8 h-8 p-0 rounded-full"
+                    style={{ backgroundColor: colorMap[theme] || colorMap.red }}
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-56">
+                  <div className="grid grid-cols-5 gap-2 p-3">
+                    {colors.map((color) => (
+                      <button
+                        key={color.value}
+                        onClick={() => {
+                          const root = document.documentElement;
+                          root.style.setProperty("--primary", colorMap[color.value]);
+                          root.style.setProperty("--primary-foreground", "#fff");
+                          root.style.setProperty("--sidebar-primary", colorMap[color.value]);
+                          root.style.setProperty("--sidebar-primary-foreground", "#fff");
+                          root.style.setProperty("--chart-1", colorMap[color.value] + "4D");
+                          root.style.setProperty("--chart-2", colorMap[color.value] + "80");
+                          root.style.setProperty("--chart-3", colorMap[color.value] + "B3");
+                          root.style.setProperty("--chart-4", colorMap[color.value] + "CC");
+                          root.style.setProperty("--chart-5", colorMap[color.value]);
+                        }}
+                        className="w-8 h-8 rounded-full border-2 border-border hover:border-primary transition-all"
+                        style={{ backgroundColor: colorMap[color.value] }}
+                        title={color.name}
+                      />
+                    ))}
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Settings */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <Settings size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={isRTL ? "start" : "end"}>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings">Settings</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Profile */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="w-8 h-8 p-0 rounded-full bg-primary text-white font-bold">
                     JD
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-56">
-                  <div className="px-4 py-3 border-b border-border">
-                    <p className="font-medium text-foreground">John Doe</p>
-                    <p className="text-xs text-muted-foreground">john@company.com</p>
-                  </div>
-                  <DropdownMenuItem>
-                    <User size={16} className="mr-2" />
-                    Profile
+                <DropdownMenuContent align={isRTL ? "start" : "end"}>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings">Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Settings size={16} className="mr-2" />
-                    Settings
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings">Settings</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-destructive">
-                    <LogOut size={16} className="mr-2" />
-                    Logout
-                  </DropdownMenuItem>
+                  <DropdownMenuItem>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           </div>
+        </nav>
 
-        </header>
-
-        {/* Page Header with Breadcrumb */}
-        <div className="bg-background border-b border-border">
-          <div className="px-6 py-4">
-            <div className={`flex items-center justify-between mb-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-              <h1 className="font-display font-bold text-2xl text-foreground">{currentPage}</h1>
-            </div>
-            {breadcrumbs && breadcrumbs.length > 0 && (
-              <div className={isRTL ? "text-right" : ""}>
-                <Breadcrumb items={breadcrumbs} />
-              </div>
-            )}
-          </div>
+        {/* Breadcrumb and Page Title */}
+        <div className={`px-6 py-4 border-b border-border bg-secondary/50 ${isRTL ? "text-right" : ""}`}>
+          <Breadcrumb items={breadcrumbs || [{ label: currentPage }]} />
         </div>
 
         {/* Page Content */}

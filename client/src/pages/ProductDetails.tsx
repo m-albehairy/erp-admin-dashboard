@@ -2,8 +2,12 @@ import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Star, ShoppingCart, Edit, MoreVertical, TrendingUp, Package, DollarSign, Eye, Info, Zap, MessageCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ChevronLeft, Star, ShoppingCart, Edit, MoreVertical, TrendingUp, Package, DollarSign, Eye, Info, Zap, MessageCircle, Search, Download, Printer, RotateCcw, Grid3x3, List, Plus } from "lucide-react";
 import TabsWithIcons from "@/components/TabsWithIcons";
+import AnimatedModal from "@/components/AnimatedModal";
+import BulkActions from "@/components/BulkActions";
+import AdvancedFilters from "@/components/AdvancedFilters";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,219 +16,431 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSettings } from "@/contexts/SettingsContext";
 
+const productsData = [
+  { id: 1, name: "Laptop Pro 15\"", sku: "LAP-001", category: "Electronics", price: "$1,299", stock: 45, status: "in-stock" },
+  { id: 2, name: "Wireless Mouse", sku: "MOU-002", category: "Accessories", price: "$29", stock: 8, status: "low-stock" },
+  { id: 3, name: "USB-C Cable", sku: "USB-003", category: "Cables", price: "$12", stock: 0, status: "out-of-stock" },
+  { id: 4, name: "Monitor 4K", sku: "MON-004", category: "Electronics", price: "$599", stock: 32, status: "in-stock" },
+  { id: 5, name: "Mechanical Keyboard", sku: "KEY-005", category: "Accessories", price: "$149", stock: 5, status: "low-stock" },
+];
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case "in-stock":
+      return "bg-green-50 text-green-600";
+    case "low-stock":
+      return "bg-orange-50 text-orange-600";
+    case "out-of-stock":
+      return "bg-red-50 text-red-600";
+    default:
+      return "bg-gray-50 text-gray-600";
+  }
+}
+
 export default function ProductDetails() {
   const { language } = useSettings();
   const isRTL = language === "ar";
-  const [activeTab, setActiveTab] = useState("overview");
-  const [selectedVariant, setSelectedVariant] = useState("silver");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({ name: "", sku: "", category: "", price: "", stock: "" });
+
+  const totalPages = Math.ceil(productsData.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedData = productsData.slice(startIndex, startIndex + pageSize);
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExport = () => {
+    const csv = [
+      ["Product Name", "SKU", "Category", "Price", "Stock", "Status"],
+      ...productsData.map(item => [item.name, item.sku, item.category, item.price, item.stock, item.status])
+    ].map(row => row.join(",")).join("\n");
+    
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "products-export.csv";
+    a.click();
+  };
+
+  const handleReload = () => {
+    window.location.reload();
+  };
 
   const breadcrumbs = [
     { label: "Dashboard", href: "/" },
-    { label: "Inventory", href: "/inventory" },
-    { label: "Laptop Pro 15\"" },
-  ];
-
-  const variants = [
-    { id: "silver", name: "Silver", price: "$1,299", stock: 45, sku: "LAP-001-SLV" },
-    { id: "space-gray", name: "Space Gray", price: "$1,299", stock: 32, sku: "LAP-001-SGR" },
-    { id: "gold", name: "Gold", price: "$1,349", stock: 18, sku: "LAP-001-GLD" },
-  ];
-
-  const specifications = [
-    { label: "Processor", value: "Intel Core i7 13th Gen" },
-    { label: "RAM", value: "16GB DDR5" },
-    { label: "Storage", value: "512GB SSD" },
-    { label: "Display", value: "15.6\" 4K Retina" },
-    { label: "Graphics", value: "NVIDIA RTX 4060" },
-    { label: "Battery", value: "10 hours" },
-  ];
-
-  const reviews = [
-    { author: "Jane Smith", rating: 5, comment: "Excellent product! Very satisfied with the quality.", date: "Feb 15, 2024" },
-    { author: "Mike Johnson", rating: 4, comment: "Good performance, but a bit pricey.", date: "Feb 10, 2024" },
+    { label: "Inventory", href: "#" },
+    { label: "Products" },
   ];
 
   return (
-    <DashboardLayout currentPage="Product Details" breadcrumbs={breadcrumbs}>
+    <DashboardLayout currentPage="Products" breadcrumbs={breadcrumbs}>
       <div className="space-y-6">
-        {/* Header */}
-        <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-          <div className={`flex items-center gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <button className="p-2 hover:bg-secondary rounded-lg transition-colors">
-              <ChevronLeft size={20} className="text-foreground" />
-            </button>
-            <div className={isRTL ? "text-right" : ""}>
-              <h2 className="font-display font-bold text-2xl text-foreground">Laptop Pro 15\"</h2>
-              <div className={`flex items-center gap-2 mt-1 ${isRTL ? "flex-row-reverse justify-end" : ""}`}>
-                <div className="flex gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={16} className={i < 4 ? "fill-orange-400 text-orange-400" : "text-muted-foreground"} />
-                  ))}
-                </div>
-                <span className="text-sm text-muted-foreground">(124 reviews)</span>
-              </div>
+        {/* Header Section */}
+        <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${isRTL ? "text-right" : ""}`}>
+          <Button className="bg-primary hover:bg-blue-700 text-white flex items-center gap-2 w-full sm:w-auto">
+            <Plus size={18} />
+            Add Product
+          </Button>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">Total Products</p>
+            <h3 className="text-2xl font-bold text-foreground mt-2">856</h3>
+            <p className="text-xs text-muted-foreground mt-2">Active in inventory</p>
+          </Card>
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">Low Stock Items</p>
+            <h3 className="text-2xl font-bold text-orange-600 mt-2">23</h3>
+            <p className="text-xs text-muted-foreground mt-2">Need reordering soon</p>
+          </Card>
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">Out of Stock</p>
+            <h3 className="text-2xl font-bold text-destructive mt-2">12</h3>
+            <p className="text-xs text-muted-foreground mt-2">Urgent action required</p>
+          </Card>
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">Total Value</p>
+            <h3 className="text-2xl font-bold text-primary mt-2">$1.2M</h3>
+            <p className="text-xs text-muted-foreground mt-2">Inventory value</p>
+          </Card>
+        </div>
+
+        {/* Bulk Actions */}
+        {selectedItems.length > 0 && (
+          <BulkActions
+            selectedCount={selectedItems.length}
+            isAllSelected={selectedItems.length === paginatedData.length}
+            onSelectAll={(checked) => {
+              if (checked) {
+                setSelectedItems(paginatedData.map(item => item.id));
+              } else {
+                setSelectedItems([]);
+              }
+            }}
+            onDelete={() => {
+              setSelectedItems([]);
+            }}
+            onExport={() => {
+              handleExport();
+              setSelectedItems([]);
+            }}
+            onStatusUpdate={() => {
+              setSelectedItems([]);
+            }}
+          />
+        )}
+
+        {/* Search and Advanced Controls - Single Row */}
+        <Card className="p-4 bg-white shadow-sm border-0">
+          <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
+            {/* Search Bar */}
+            <div className="relative flex-1 min-w-xs">
+              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-4" : "left-4"}`} />
+              <Input 
+                type="text" 
+                placeholder="Search by product name or SKU..." 
+                className={`${isRTL ? "pr-12 text-right" : "pl-12"} bg-secondary border-0`} 
+              />
             </div>
-          </div>
-          <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <Button className="bg-primary hover:bg-blue-700 text-white">
-              <ShoppingCart size={16} className="mr-2" />
-              Add to Cart
+
+            {/* Advanced Filters */}
+            <AdvancedFilters
+              onApplyFilters={(filters) => setAppliedFilters(filters)}
+              onClearFilters={() => setAppliedFilters({})}
+              filterOptions={{
+                status: {
+                  label: "Status",
+                  options: ["In Stock", "Low Stock", "Out of Stock"],
+                },
+                category: {
+                  label: "Category",
+                  options: ["Electronics", "Accessories", "Cables"],
+                },
+              }}
+            />
+
+            {/* Reload Button */}
+            <Button
+              variant="outline"
+              className="border-border"
+              onClick={handleReload}
+              title="Reload data"
+            >
+              <RotateCcw size={16} />
             </Button>
+
+            {/* Print Button */}
+            <Button
+              variant="outline"
+              className="border-border"
+              onClick={handlePrint}
+              title="Print table"
+            >
+              <Printer size={16} />
+            </Button>
+
+            {/* Export Button */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-border">
-                  <MoreVertical size={16} />
+                <Button variant="outline" className="border-border flex items-center gap-2">
+                  <Download size={16} />
+                  <span className="hidden sm:inline">Export</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align={isRTL ? "start" : "end"}>
-                <DropdownMenuItem>Edit Product</DropdownMenuItem>
-                <DropdownMenuItem>View Analytics</DropdownMenuItem>
-                <DropdownMenuItem>Manage Stock</DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive">Discontinue</DropdownMenuItem>
+              <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-48">
+                <DropdownMenuItem onClick={handleExport}>Export as CSV</DropdownMenuItem>
+                <DropdownMenuItem>Export as Excel</DropdownMenuItem>
+                <DropdownMenuItem>Export as PDF</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* View Mode Toggle */}
+            <div className="flex gap-1 border border-border rounded-lg p-1">
+              <button
+                onClick={() => setViewMode("table")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "table"
+                    ? "bg-primary text-white"
+                    : "text-foreground hover:bg-secondary"
+                }`}
+                title="Table view"
+              >
+                <List size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-primary text-white"
+                    : "text-foreground hover:bg-secondary"
+                }`}
+                title="Grid view"
+              >
+                <Grid3x3 size={16} />
+              </button>
+            </div>
           </div>
-        </div>
+        </Card>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Product Image & Variants */}
-          <div className="lg:col-span-1">
-            <Card className="bg-white shadow-sm border-0 p-6 mb-6">
-              <div className="w-full h-64 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center mb-6">
-                <Package size={80} className="text-muted-foreground" />
-              </div>
+        {/* Table View */}
+        {viewMode === "table" && (
+          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-secondary/50">
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.length === paginatedData.length && paginatedData.length > 0}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedItems(paginatedData.map(item => item.id));
+                          } else {
+                            setSelectedItems([]);
+                          }
+                        }}
+                        className="w-4 h-4 rounded border-border"
+                      />
+                    </th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Product Name</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">SKU</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Category</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Price</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Stock</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-left">Status</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedData.map((item) => (
+                    <tr key={item.id} className="border-b border-border hover:bg-secondary/50 transition-colors">
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedItems([...selectedItems, item.id]);
+                            } else {
+                              setSelectedItems(selectedItems.filter(id => id !== item.id));
+                            }
+                          }}
+                          className="w-4 h-4 rounded border-border"
+                        />
+                      </td>
+                      <td className="px-6 py-4 text-sm text-foreground font-medium">{item.name}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.sku}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.category}</td>
+                      <td className="px-6 py-4 text-sm text-foreground font-medium">{item.price}</td>
+                      <td className="px-6 py-4 text-sm text-foreground">{item.stock}</td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                          {item.status.replace("-", " ").charAt(0).toUpperCase() + item.status.replace("-", " ").slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical size={16} />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align={isRTL ? "start" : "end"}>
+                            <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>Edit</DropdownMenuItem>
+                            <DropdownMenuItem>View Details</DropdownMenuItem>
+                            <DropdownMenuItem>Manage Stock</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-              <h3 className={`font-semibold text-foreground mb-3 ${isRTL ? "text-right" : ""}`}>Color Variants</h3>
-              <div className="space-y-2">
-                {variants.map((variant) => (
-                  <button
-                    key={variant.id}
-                    onClick={() => setSelectedVariant(variant.id)}
-                    className={`w-full p-3 border-2 rounded-lg transition-all text-left ${
-                      selectedVariant === variant.id
-                        ? "border-primary bg-blue-50"
-                        : "border-border hover:border-primary"
-                    } ${isRTL ? "text-right" : ""}`}
-                  >
-                    <p className="font-medium text-foreground">{variant.name}</p>
-                    <p className="text-xs text-muted-foreground">{variant.price}</p>
-                  </button>
-                ))}
+            {/* Pagination */}
+            <div className={`flex items-center justify-between px-6 py-4 border-t border-border ${isRTL ? "flex-row-reverse" : ""}`}>
+              <div className="text-sm text-muted-foreground">
+                Showing {startIndex + 1} to {Math.min(startIndex + pageSize, productsData.length)} of {productsData.length}
               </div>
-            </Card>
+              <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-2 border border-border rounded-lg text-sm bg-white text-foreground"
+              >
+                <option value={5}>5 per page</option>
+                <option value={10}>10 per page</option>
+                <option value={25}>25 per page</option>
+                <option value={50}>50 per page</option>
+              </select>
+            </div>
+          </Card>
+        )}
 
-            {/* Key Metrics */}
-            <Card className="bg-white shadow-sm border-0 p-6">
-              <h3 className={`font-semibold text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>Product Stats</h3>
-              <div className="space-y-4">
-                <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                    <Eye size={16} className="text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Views</span>
+        {/* Grid View */}
+        {viewMode === "grid" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {paginatedData.map((item) => (
+              <Card key={item.id} className="p-4 bg-white shadow-sm border-0">
+                <div className={`flex items-start justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <div className={isRTL ? "text-right" : ""}>
+                    <h3 className="font-semibold text-foreground">{item.name}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">SKU: {item.sku}</p>
+                    <p className="text-xs text-muted-foreground">{item.category}</p>
+                    <div className="mt-3 space-y-1">
+                      <p className="text-sm font-medium text-foreground">{item.price}</p>
+                      <p className="text-xs text-muted-foreground">Stock: {item.stock}</p>
+                    </div>
                   </div>
-                  <span className="font-semibold text-foreground">2,450</span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                    {item.status.replace("-", " ").charAt(0).toUpperCase() + item.status.replace("-", " ").slice(1)}
+                  </span>
                 </div>
-                <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                    <ShoppingCart size={16} className="text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Sold</span>
-                  </div>
-                  <span className="font-semibold text-foreground">156</span>
-                </div>
-                <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                    <TrendingUp size={16} className="text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Revenue</span>
-                  </div>
-                  <span className="font-semibold text-foreground">$202,644</span>
-                </div>
-              </div>
-            </Card>
+              </Card>
+            ))}
           </div>
+        )}
 
-          {/* Right Column - Details */}
-          <div className="lg:col-span-2">
-            {/* Tabs */}
-            <Card className="bg-white shadow-sm border-0 p-0 overflow-hidden mb-6">
-              <TabsWithIcons
-                tabs={[
-                  { id: "overview", label: "Overview", icon: Info },
-                  { id: "specs", label: "Specifications", icon: Zap },
-                  { id: "reviews", label: "Reviews", icon: MessageCircle },
-                ]}
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                isRTL={isRTL}
+        {/* Edit Modal */}
+        <AnimatedModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          title="Edit Product"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Product Name</label>
+              <Input
+                type="text"
+                value={editFormData.name}
+                onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                placeholder="Product name"
               />
-
-              {/* Tab Content */}
-              <div className="p-6">
-                {activeTab === "overview" && (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className={`font-semibold text-foreground mb-2 ${isRTL ? "text-right" : ""}`}>Description</h3>
-                      <p className={`text-sm text-foreground leading-relaxed ${isRTL ? "text-right" : ""}`}>
-                        Experience ultimate performance with our Laptop Pro 15". Featuring cutting-edge Intel Core i7 13th Gen processor, 16GB DDR5 RAM, and stunning 4K Retina display. Perfect for professionals and content creators.
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className={`p-4 bg-secondary rounded-lg ${isRTL ? "text-right" : ""}`}>
-                        <p className="text-xs text-muted-foreground mb-1">SKU</p>
-                        <p className="font-semibold text-foreground">LAP-001-SLV</p>
-                      </div>
-                      <div className={`p-4 bg-secondary rounded-lg ${isRTL ? "text-right" : ""}`}>
-                        <p className="text-xs text-muted-foreground mb-1">Category</p>
-                        <p className="font-semibold text-foreground">Electronics</p>
-                      </div>
-                      <div className={`p-4 bg-secondary rounded-lg ${isRTL ? "text-right" : ""}`}>
-                        <p className="text-xs text-muted-foreground mb-1">Stock</p>
-                        <p className="font-semibold text-accent">45 units</p>
-                      </div>
-                      <div className={`p-4 bg-secondary rounded-lg ${isRTL ? "text-right" : ""}`}>
-                        <p className="text-xs text-muted-foreground mb-1">Price</p>
-                        <p className="font-semibold text-foreground">$1,299</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "specs" && (
-                  <div className="space-y-3">
-                    {specifications.map((spec, idx) => (
-                      <div key={idx} className={`flex justify-between p-3 border border-border rounded-lg ${isRTL ? "flex-row-reverse text-right" : ""}`}>
-                        <span className="text-sm text-muted-foreground">{spec.label}</span>
-                        <span className="font-medium text-foreground">{spec.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {activeTab === "reviews" && (
-                  <div className="space-y-4">
-                    {reviews.map((review, idx) => (
-                      <div key={idx} className={`p-4 border border-border rounded-lg ${isRTL ? "text-right" : ""}`}>
-                        <div className={`flex items-center justify-between mb-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                          <div className={isRTL ? "text-right" : ""}>
-                            <p className="font-semibold text-foreground">{review.author}</p>
-                            <p className="text-xs text-muted-foreground">{review.date}</p>
-                          </div>
-                          <div className="flex gap-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} size={14} className={i < review.rating ? "fill-orange-400 text-orange-400" : "text-muted-foreground"} />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-sm text-foreground">{review.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Card>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">SKU</label>
+              <Input
+                type="text"
+                value={editFormData.sku}
+                onChange={(e) => setEditFormData({ ...editFormData, sku: e.target.value })}
+                placeholder="SKU"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Category</label>
+              <Input
+                type="text"
+                value={editFormData.category}
+                onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value })}
+                placeholder="Category"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Price</label>
+              <Input
+                type="text"
+                value={editFormData.price}
+                onChange={(e) => setEditFormData({ ...editFormData, price: e.target.value })}
+                placeholder="Price"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Stock</label>
+              <Input
+                type="number"
+                value={editFormData.stock}
+                onChange={(e) => setEditFormData({ ...editFormData, stock: e.target.value })}
+                placeholder="Stock quantity"
+              />
+            </div>
+            <Button className="w-full bg-primary hover:bg-blue-700 text-white">Save Changes</Button>
           </div>
-        </div>
+        </AnimatedModal>
       </div>
     </DashboardLayout>
   );
