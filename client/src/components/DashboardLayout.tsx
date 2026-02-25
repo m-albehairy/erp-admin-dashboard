@@ -1,4 +1,5 @@
-import { ReactNode, useState } from "react";
+import { useState, ReactNode } from "react";
+import { Link } from "wouter";
 import { Menu, X, Bell, Settings, LogOut, User, Search, Globe, Maximize2, Moon, Sun, Calendar, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,28 +41,52 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       name: "Orders",
       icon: "🛒",
       submenu: [
-        { name: "All Orders", icon: "📋", href: "/orders" },
-        { name: "Pending", icon: "⏳", href: "/orders/pending" },
-        { name: "Completed", icon: "✅", href: "/orders/completed" },
+        { name: "All Orders", icon: "📋", href: "/order-details" },
+        { name: "Pending", icon: "⏳", href: "/order-details" },
+        { name: "Completed", icon: "✅", href: "/order-details" },
       ],
     },
     {
       name: "Customers",
       icon: "👥",
       submenu: [
-        { name: "All Customers", icon: "👥", href: "/customers" },
-        { name: "Active", icon: "✨", href: "/customers/active" },
-        { name: "Inactive", icon: "🔒", href: "/customers/inactive" },
+        { name: "All Customers", icon: "👥", href: "/customer-details" },
+        { name: "Active", icon: "✨", href: "/customer-details" },
+        { name: "Inactive", icon: "🔒", href: "/customer-details" },
+      ],
+    },
+    {
+      name: "Products",
+      icon: "📦",
+      submenu: [
+        { name: "All Products", icon: "📦", href: "/product-details" },
+        { name: "In Stock", icon: "✅", href: "/product-details" },
+        { name: "Low Stock", icon: "⚠️", href: "/product-details" },
       ],
     },
     {
       name: "Reports",
       icon: "📋",
       submenu: [
-        { name: "Sales Report", icon: "💹", href: "/reports/sales" },
-        { name: "Inventory Report", icon: "📦", href: "/reports/inventory" },
-        { name: "Customer Report", icon: "👥", href: "/reports/customers" },
+        { name: "Sales Report", icon: "💹", href: "/reports" },
+        { name: "Inventory Report", icon: "📦", href: "/reports" },
+        { name: "Customer Report", icon: "👥", href: "/reports" },
       ],
+    },
+    {
+      name: "Financial",
+      icon: "💰",
+      href: "/financial",
+    },
+    {
+      name: "Employees",
+      icon: "👤",
+      href: "/employees",
+    },
+    {
+      name: "Purchase Orders",
+      icon: "🛍️",
+      href: "/purchase-orders",
     },
   ];
 
@@ -108,8 +133,8 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
             )}
           </>
         ) : (
-          <a
-            href={item.href}
+          <Link
+            href={item.href || "/"}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
               currentPage === item.name
                 ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
@@ -118,7 +143,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
           >
             <span className="text-xl">{item.icon}</span>
             {sidebarOpen && <span>{item.name}</span>}
-          </a>
+          </Link>
         )}
       </div>
     ));
@@ -134,12 +159,12 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       >
         {/* Logo Section */}
         <div className={`p-6 border-b border-sidebar-border ${isRTL ? "text-right" : ""}`}>
-          <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+          <Link href="/" className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-lg">
               E
             </div>
             {sidebarOpen && <span className="font-display font-bold text-lg text-foreground">ERP</span>}
-          </div>
+          </Link>
         </div>
 
         {/* Navigation Items */}
@@ -157,10 +182,10 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
             </div>
           )}
 
-          <button className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors text-sm ${isRTL ? "flex-row-reverse" : ""}`}>
+          <Link href="/settings" className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors text-sm ${isRTL ? "flex-row-reverse" : ""}`}>
             <Settings size={18} />
             {sidebarOpen && <span>Settings</span>}
-          </button>
+          </Link>
         </nav>
 
         {/* Footer Section */}
@@ -200,119 +225,106 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
               </div>
             </div>
 
-            {/* Right Section */}
-            <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-              {/* Language Dropdown */}
+            {/* Right Section - Icons */}
+            <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+              {/* Language Selector */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="p-2 hover:bg-secondary rounded-lg transition-colors" title="Language">
-                    <Globe size={20} className="text-foreground" />
-                  </button>
+                  <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+                    <Globe size={18} />
+                  </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-40">
-                  <DropdownMenuItem onClick={() => setLanguage("en")} className={language === "en" ? "bg-secondary" : ""}>
-                    🇺🇸 English
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setLanguage("es")} className={language === "es" ? "bg-secondary" : ""}>
-                    🇪🇸 Español
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setLanguage("fr")} className={language === "fr" ? "bg-secondary" : ""}>
-                    🇫🇷 Français
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setLanguage("de")} className={language === "de" ? "bg-secondary" : ""}>
-                    🇩🇪 Deutsch
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setLanguage("zh")} className={language === "zh" ? "bg-secondary" : ""}>
-                    🇨🇳 中文
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setLanguage("ar")} className={language === "ar" ? "bg-secondary" : ""}>
-                    🇸🇦 العربية
-                  </DropdownMenuItem>
+                <DropdownMenuContent align={isRTL ? "start" : "end"}>
+                  {["en", "es", "fr", "de", "zh", "ar"].map((lang) => (
+                    <DropdownMenuItem key={lang} onClick={() => setLanguage(lang)}>
+                      {lang === "en" ? "English" : lang === "es" ? "Español" : lang === "fr" ? "Français" : lang === "de" ? "Deutsch" : lang === "zh" ? "中文" : "العربية"}
+                    </DropdownMenuItem>
+                  ))}
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Fullscreen Toggle */}
-              <button
-                onClick={toggleFullscreen}
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
-                title="Fullscreen"
-              >
-                <Maximize2 size={20} className="text-foreground" />
-              </button>
+              {/* Fullscreen */}
+              <Button variant="ghost" size="sm" className="h-9 w-9 p-0" onClick={toggleFullscreen}>
+                <Maximize2 size={18} />
+              </Button>
 
-              {/* Dark/Light Mode Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
-                title="Toggle Theme"
-              >
-                {theme === "dark" ? <Sun size={20} className="text-foreground" /> : <Moon size={20} className="text-foreground" />}
-              </button>
+              {/* Theme Toggle */}
+              <Button variant="ghost" size="sm" className="h-9 w-9 p-0" onClick={toggleTheme}>
+                {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+              </Button>
 
-              {/* Financial Year Dropdown */}
+              {/* Financial Year */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className={`p-2 hover:bg-secondary rounded-lg transition-colors flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`} title="Financial Year">
-                    <Calendar size={20} className="text-foreground" />
-                    <span className="text-sm font-medium text-foreground hidden sm:inline">{financialYear}</span>
-                  </button>
+                  <Button variant="ghost" size="sm" className="h-9 px-3 gap-2">
+                    <Calendar size={16} />
+                    <span className="text-sm">{financialYear}</span>
+                  </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-48">
-                  <DropdownMenuItem onClick={() => setFinancialYear("2025-2026")} className={financialYear === "2025-2026" ? "bg-secondary" : ""}>
-                    Financial Year 2025-2026
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFinancialYear("2024-2025")} className={financialYear === "2024-2025" ? "bg-secondary" : ""}>
-                    Financial Year 2024-2025
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFinancialYear("2023-2024")} className={financialYear === "2023-2024" ? "bg-secondary" : ""}>
-                    Financial Year 2023-2024
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>View All Years</DropdownMenuItem>
+                <DropdownMenuContent align={isRTL ? "start" : "end"}>
+                  {["2025-2026", "2024-2025", "2023-2024"].map((year) => (
+                    <DropdownMenuItem key={year} onClick={() => setFinancialYear(year)}>
+                      {year}
+                    </DropdownMenuItem>
+                  ))}
                 </DropdownMenuContent>
               </DropdownMenu>
 
               {/* Notifications */}
-              <button className="relative p-2 hover:bg-secondary rounded-lg transition-colors" title="Notifications">
-                <Bell size={20} className="text-foreground" />
+              <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative">
+                <Bell size={18} />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full"></span>
-              </button>
+              </Button>
+
+              {/* Settings */}
+              <Link href="/settings">
+                <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+                  <Settings size={18} />
+                </Button>
+              </Link>
 
               {/* Profile Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="w-10 h-10 bg-gradient-to-br from-primary to-blue-700 rounded-full flex items-center justify-center text-white font-bold hover:opacity-90 transition-opacity">
+                  <Button variant="ghost" size="sm" className="h-9 w-9 p-0 rounded-full bg-primary text-white hover:bg-blue-700">
                     JD
-                  </button>
+                  </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-48">
+                <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-56">
                   <div className="px-4 py-3 border-b border-border">
-                    <p className="text-sm font-semibold text-foreground">John Doe</p>
-                    <p className="text-xs text-muted-foreground">admin@example.com</p>
+                    <p className="font-medium text-foreground">John Doe</p>
+                    <p className="text-xs text-muted-foreground">john@company.com</p>
                   </div>
-                  <DropdownMenuItem className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                    <User size={16} />
-                    <span>My Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                    <Settings size={16} />
-                    <span>Settings</span>
+                  <DropdownMenuItem>
+                    <User size={16} className="mr-2" />
+                    Profile
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className={`flex items-center gap-2 text-destructive ${isRTL ? "flex-row-reverse" : ""}`}>
-                    <LogOut size={16} />
-                    <span>Logout</span>
+                  <DropdownMenuItem>
+                    <Settings size={16} className="mr-2" />
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-destructive">
+                    <LogOut size={16} className="mr-2" />
+                    Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           </div>
+
+          {/* Breadcrumb */}
+          {breadcrumbs && breadcrumbs.length > 0 && (
+            <div className={`px-6 py-2 bg-secondary border-t border-border ${isRTL ? "text-right" : ""}`}>
+              <Breadcrumb items={breadcrumbs} />
+            </div>
+          )}
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto bg-background">
-          <div className={`p-6 ${isRTL ? "text-right" : ""}`}>
-            {breadcrumbs && <Breadcrumb items={breadcrumbs} />}
+        <main className="flex-1 overflow-auto">
+          <div className="p-6">
             {children}
           </div>
         </main>

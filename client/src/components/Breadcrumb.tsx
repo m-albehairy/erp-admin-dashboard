@@ -1,4 +1,5 @@
 import { ChevronRight } from "lucide-react";
+import { Link } from "wouter";
 
 interface BreadcrumbItem {
   label: string;
@@ -15,9 +16,9 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
       {items.map((item, index) => (
         <div key={index} className="flex items-center gap-2">
           {item.href ? (
-            <a href={item.href} className="text-primary hover:text-blue-700 transition-colors">
+            <Link href={item.href} className="text-primary hover:text-blue-700 transition-colors">
               {item.label}
-            </a>
+            </Link>
           ) : (
             <span className="text-foreground font-medium">{item.label}</span>
           )}
