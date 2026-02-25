@@ -2,6 +2,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { TrendingUp, TrendingDown, Package, ShoppingCart, Users, DollarSign } from "lucide-react";
+import { useSettings } from "@/contexts/SettingsContext";
 
 const lineChartData = [
   { name: "Jan", sales: 4000, revenue: 2400 },
@@ -29,8 +30,15 @@ const pieChartData = [
 const COLORS = ["#10B981", "#F59E0B", "#EF4444"];
 
 export default function Dashboard() {
+  const { language } = useSettings();
+  const isRTL = language === "ar";
+
+  const breadcrumbs = [
+    { label: "Dashboard" },
+  ];
+
   return (
-    <DashboardLayout currentPage="Dashboard">
+    <DashboardLayout currentPage="Dashboard" breadcrumbs={breadcrumbs}>
       <div className="space-y-6">
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

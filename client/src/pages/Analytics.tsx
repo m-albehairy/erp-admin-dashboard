@@ -1,6 +1,7 @@
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/contexts/SettingsContext";
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter } from "recharts";
 import { Download, Calendar } from "lucide-react";
 
@@ -33,8 +34,16 @@ const customerData = [
 ];
 
 export default function Analytics() {
+  const { language } = useSettings();
+  const isRTL = language === "ar";
+
+  const breadcrumbs = [
+    { label: "Dashboard", href: "/" },
+    { label: "Analytics" },
+  ];
+
   return (
-    <DashboardLayout currentPage="Analytics">
+    <DashboardLayout currentPage="Analytics" breadcrumbs={breadcrumbs}>
       <div className="space-y-6">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

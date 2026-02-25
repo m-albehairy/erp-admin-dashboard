@@ -4,9 +4,11 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { SettingsProvider } from "./contexts/SettingsContext";
 import Dashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
 import Analytics from "./pages/Analytics";
+import Settings from "./pages/Settings";
 import Showcase from "./pages/Showcase";
 
 
@@ -14,6 +16,7 @@ function Router() {
   return (
     <Switch>
       <Route path={"/showcase"} component={Showcase} />
+      <Route path={"/settings"} component={Settings} />
       <Route path={"/"} component={Dashboard} />
       <Route path={"/inventory"} component={Inventory} />
       <Route path={"/analytics"} component={Analytics} />
@@ -36,10 +39,12 @@ function App() {
         defaultTheme="light"
         // switchable
       >
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <SettingsProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </SettingsProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
