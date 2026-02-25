@@ -583,8 +583,8 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
             <button
               onClick={() => handleToggleMenu(item.name)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 ${
-                isGroupActive || expandedMenus.includes(item.name)
-                  ? "bg-primary text-white font-medium"
+                expandedMenus.includes(item.name)
+                  ? "text-sidebar-foreground hover:bg-sidebar-accent/50"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/50"
               } ${isRTL ? "hover:-translate-x-1" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""} ${isRTL ? "flex-row-reverse" : ""}`}
             >
@@ -610,11 +610,12 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
             href={item.href || "/"}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 ${
               isActive
-                ? "bg-primary text-white font-medium"
+                ? "bg-gray-200 dark:bg-gray-700 font-medium"
                 : "text-sidebar-foreground hover:bg-sidebar-accent/50"
             } ${isRTL ? "hover:-translate-x-1 flex-row-reverse" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""}`}
+            style={isActive ? { color: colorMap[theme] || colorMap.blue } : {}}
           >
-            <FontAwesomeIcon icon={item.icon} className="w-4 h-4" />
+            <FontAwesomeIcon icon={item.icon} className="w-4 h-4" style={isActive ? { color: colorMap[theme] || colorMap.blue } : {}} />
             {(sidebarOpen || sidebarHovered) && <span>{getTranslation(item.name)}</span>}
           </Link>
         )}
