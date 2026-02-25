@@ -1,9 +1,11 @@
 import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
+import TableControls from "@/components/TableControls";
+import FormModal from "@/components/FormModal";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Printer, Download, Send, MessageSquare, Package, Truck, CheckCircle, Clock, AlertCircle, MapPin, Phone, Mail, User, Calendar, DollarSign, Edit, MoreVertical } from "lucide-react";
+import { ChevronLeft, ChevronRight, Edit, Trash2, Eye } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,253 +14,307 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSettings } from "@/contexts/SettingsContext";
 
+const ordersData = [
+  { id: 1, orderNo: "ORD-2024-001", customer: "John Doe", amount: "$1,299", status: "completed", date: "2024-02-20" },
+  { id: 2, orderNo: "ORD-2024-002", customer: "Jane Smith", amount: "$2,450", status: "in-transit", date: "2024-02-21" },
+  { id: 3, orderNo: "ORD-2024-003", customer: "Mike Johnson", amount: "$899", status: "pending", date: "2024-02-22" },
+  { id: 4, orderNo: "ORD-2024-004", customer: "Sarah Williams", amount: "$3,200", status: "completed", date: "2024-02-23" },
+  { id: 5, orderNo: "ORD-2024-005", customer: "Tom Brown", amount: "$1,550", status: "pending", date: "2024-02-24" },
+  { id: 6, orderNo: "ORD-2024-006", customer: "Emma Davis", amount: "$2,100", status: "in-transit", date: "2024-02-25" },
+  { id: 7, orderNo: "ORD-2024-007", customer: "Chris Wilson", amount: "$890", status: "completed", date: "2024-02-26" },
+  { id: 8, orderNo: "ORD-2024-008", customer: "Lisa Anderson", amount: "$1,750", status: "pending", date: "2024-02-27" },
+  { id: 9, orderNo: "ORD-2024-009", customer: "David Taylor", amount: "$2,600", status: "completed", date: "2024-02-28" },
+  { id: 10, orderNo: "ORD-2024-010", customer: "Rachel Martin", amount: "$1,200", status: "in-transit", date: "2024-02-29" },
+];
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case "completed":
+      return "bg-green-50 text-green-600";
+    case "in-transit":
+      return "bg-blue-50 text-blue-600";
+    case "pending":
+      return "bg-orange-50 text-orange-600";
+    case "cancelled":
+      return "bg-red-50 text-red-600";
+    default:
+      return "bg-gray-50 text-gray-600";
+  }
+}
+
 export default function OrderDetails() {
   const { language } = useSettings();
   const isRTL = language === "ar";
-  const [activeTab, setActiveTab] = useState("overview");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ orderNo: "", customer: "", amount: "", status: "" });
+
+  const totalPages = Math.ceil(ordersData.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedData = ordersData.slice(startIndex, startIndex + pageSize);
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExport = () => {
+    const csv = [
+      ["Order No", "Customer", "Amount", "Status", "Date"],
+      ...ordersData.map(item => [item.orderNo, item.customer, item.amount, item.status, item.date])
+    ].map(row => row.join(",")).join("\n");
+    
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "orders-export.csv";
+    a.click();
+  };
+
+  const handleReload = () => {
+    window.location.reload();
+  };
 
   const breadcrumbs = [
     { label: "Dashboard", href: "/" },
-    { label: "Orders", href: "/orders" },
-    { label: "Order #ORD-2024-001" },
-  ];
-
-  const orderTimeline = [
-    { status: "Order Placed", date: "2024-02-20 10:30 AM", completed: true, icon: "📋" },
-    { status: "Payment Confirmed", date: "2024-02-20 10:45 AM", completed: true, icon: "✅" },
-    { status: "Preparing", date: "2024-02-21 02:00 PM", completed: true, icon: "📦" },
-    { status: "Shipped", date: "2024-02-22 08:15 AM", completed: true, icon: "🚚" },
-    { status: "In Transit", date: "Expected: 2024-02-24", completed: false, icon: "🛣️" },
-    { status: "Delivered", date: "Expected: 2024-02-25", completed: false, icon: "✓" },
+    { label: "Orders" },
   ];
 
   return (
-    <DashboardLayout currentPage="Order Details" breadcrumbs={breadcrumbs}>
+    <DashboardLayout currentPage="Orders" breadcrumbs={breadcrumbs}>
       <div className="space-y-6">
-        {/* Header with Actions */}
-        <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-          <div className={`flex items-center gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <button className="p-2 hover:bg-secondary rounded-lg transition-colors">
-              <ChevronLeft size={20} className="text-foreground" />
-            </button>
-            <div className={isRTL ? "text-right" : ""}>
-              <h2 className="font-display font-bold text-2xl text-foreground">Order #ORD-2024-001</h2>
-              <p className="text-sm text-muted-foreground">Placed on February 20, 2024</p>
+        {/* Header */}
+        <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${isRTL ? "text-right" : ""}`}>
+          <div>
+            <h2 className="font-display font-bold text-2xl text-foreground">Orders Management</h2>
+            <p className="text-sm text-muted-foreground mt-1">Manage and track all customer orders</p>
+          </div>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
+            <h3 className="text-2xl font-bold text-foreground mt-2">2,345</h3>
+            <p className="text-xs text-muted-foreground mt-2">All time</p>
+          </Card>
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">Pending</p>
+            <h3 className="text-2xl font-bold text-orange-600 mt-2">23</h3>
+            <p className="text-xs text-muted-foreground mt-2">Awaiting action</p>
+          </Card>
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">In Transit</p>
+            <h3 className="text-2xl font-bold text-blue-600 mt-2">45</h3>
+            <p className="text-xs text-muted-foreground mt-2">On the way</p>
+          </Card>
+          <Card className="p-4 bg-white shadow-sm border-0">
+            <p className="text-sm font-medium text-muted-foreground">Completed</p>
+            <h3 className="text-2xl font-bold text-green-600 mt-2">2,277</h3>
+            <p className="text-xs text-muted-foreground mt-2">Delivered</p>
+          </Card>
+        </div>
+
+        {/* Table Controls */}
+        <TableControls
+          onSearch={() => {}}
+          onAddNew={() => setIsCreateModalOpen(true)}
+          onPrint={handlePrint}
+          onExport={handleExport}
+          onReload={handleReload}
+          onViewChange={setViewMode}
+          viewMode={viewMode}
+          isRTL={isRTL}
+          addButtonLabel="Create Order"
+        />
+
+        {/* Table View */}
+        {viewMode === "table" && (
+          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-secondary border-b border-border">
+                  <tr>
+                    <th className={`px-6 py-3 text-left text-xs font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>Order No</th>
+                    <th className={`px-6 py-3 text-left text-xs font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>Customer</th>
+                    <th className={`px-6 py-3 text-left text-xs font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>Amount</th>
+                    <th className={`px-6 py-3 text-left text-xs font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>Status</th>
+                    <th className={`px-6 py-3 text-left text-xs font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>Date</th>
+                    <th className={`px-6 py-3 text-left text-xs font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {paginatedData.map((order) => (
+                    <tr key={order.id} className="hover:bg-secondary transition-colors">
+                      <td className={`px-6 py-4 text-sm font-medium text-foreground ${isRTL ? "text-right" : ""}`}>{order.orderNo}</td>
+                      <td className={`px-6 py-4 text-sm text-foreground ${isRTL ? "text-right" : ""}`}>{order.customer}</td>
+                      <td className={`px-6 py-4 text-sm font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>{order.amount}</td>
+                      <td className={`px-6 py-4 text-sm ${isRTL ? "text-right" : ""}`}>
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                          {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace("-", " ")}
+                        </span>
+                      </td>
+                      <td className={`px-6 py-4 text-sm text-muted-foreground ${isRTL ? "text-right" : ""}`}>{order.date}</td>
+                      <td className={`px-6 py-4 text-sm ${isRTL ? "text-right" : ""}`}>
+                        <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Eye size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => {
+                            setFormData({ orderNo: order.orderNo, customer: order.customer, amount: order.amount, status: order.status });
+                            setIsEditModalOpen(true);
+                          }}>
+                            <Edit size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive">
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-          <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <Button variant="outline" className="border-border">
-              <Printer size={16} />
-            </Button>
-            <Button variant="outline" className="border-border">
-              <Download size={16} />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-border">
-                  <MoreVertical size={16} />
+
+            {/* Pagination */}
+            <div className={`px-6 py-4 border-t border-border flex items-center justify-between ${isRTL ? "flex-row-reverse text-right" : ""}`}>
+              <p className="text-sm text-muted-foreground">
+                Showing {startIndex + 1} to {Math.min(startIndex + pageSize, ordersData.length)} of {ordersData.length} orders
+              </p>
+              <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <Button
+                  variant="outline"
+                  className="border-border"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft size={16} />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align={isRTL ? "start" : "end"}>
-                <DropdownMenuItem>Edit Order</DropdownMenuItem>
-                <DropdownMenuItem>Duplicate Order</DropdownMenuItem>
-                <DropdownMenuItem>Cancel Order</DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-
-        {/* Status Badge */}
-        <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-          <div className="w-3 h-3 bg-accent rounded-full animate-pulse"></div>
-          <span className="text-sm font-semibold text-accent">In Transit</span>
-          <span className="text-xs text-muted-foreground">Expected delivery: Feb 25, 2024</span>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Order Details */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Tabs */}
-            <Card className="bg-white shadow-sm border-0 p-0 overflow-hidden">
-              <div className={`flex border-b border-border ${isRTL ? "flex-row-reverse" : ""}`}>
-                {["overview", "items", "timeline", "notes"].map((tab) => (
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`flex-1 px-6 py-4 text-sm font-medium transition-colors border-b-2 ${
-                      activeTab === tab
-                        ? "border-primary text-primary"
-                        : "border-transparent text-muted-foreground hover:text-foreground"
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-8 h-8 rounded transition-colors text-sm ${
+                      currentPage === page
+                        ? "bg-primary text-white"
+                        : "border border-border hover:bg-secondary"
                     }`}
                   >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    {page}
                   </button>
                 ))}
+                <Button
+                  variant="outline"
+                  className="border-border"
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight size={16} />
+                </Button>
               </div>
+            </div>
+          </Card>
+        )}
 
-              {/* Tab Content */}
-              <div className="p-6">
-                {activeTab === "overview" && (
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">Order ID</p>
-                        <p className="font-semibold text-foreground">ORD-2024-001</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">Order Date</p>
-                        <p className="font-semibold text-foreground">Feb 20, 2024</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">Payment Status</p>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-50 text-accent rounded-full text-xs font-medium">
-                          <CheckCircle size={14} />
-                          Paid
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">Fulfillment Status</p>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-primary rounded-full text-xs font-medium">
-                          <Truck size={14} />
-                          In Transit
-                        </div>
-                      </div>
-                    </div>
+        {/* Grid View */}
+        {viewMode === "grid" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paginatedData.map((order) => (
+              <Card key={order.id} className="p-6 bg-white shadow-sm border-0 hover:shadow-md transition-shadow">
+                <div className={`flex justify-between items-start mb-4 ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <div className={isRTL ? "text-right" : ""}>
+                    <h3 className="font-display font-bold text-lg text-foreground">{order.orderNo}</h3>
+                    <p className="text-xs text-muted-foreground">{order.customer}</p>
                   </div>
-                )}
-
-                {activeTab === "items" && (
-                  <div className="space-y-4">
-                    {[
-                      { name: "Laptop Pro 15\"", sku: "LAP-001", qty: 2, price: "$1,299", total: "$2,598" },
-                      { name: "Wireless Mouse", sku: "MOU-002", qty: 5, price: "$29", total: "$145" },
-                      { name: "USB-C Cable", sku: "USB-003", qty: 10, price: "$12", total: "$120" },
-                    ].map((item, idx) => (
-                      <div key={idx} className={`flex items-center justify-between p-4 border border-border rounded-lg ${isRTL ? "flex-row-reverse text-right" : ""}`}>
-                        <div className={`flex-1 ${isRTL ? "text-right" : ""}`}>
-                          <p className="font-medium text-foreground">{item.name}</p>
-                          <p className="text-xs text-muted-foreground">{item.sku}</p>
-                        </div>
-                        <div className={`text-right ${isRTL ? "text-left" : ""}`}>
-                          <p className="text-sm font-medium text-foreground">Qty: {item.qty}</p>
-                          <p className="text-sm text-muted-foreground">{item.price}</p>
-                        </div>
-                        <p className="font-semibold text-foreground w-24 text-right">{item.total}</p>
-                      </div>
-                    ))}
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                    {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace("-", " ")}
+                  </span>
+                </div>
+                <div className="space-y-3 mb-4">
+                  <div className={`flex justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
+                    <span className="text-sm text-muted-foreground">Amount</span>
+                    <span className="text-sm font-semibold text-foreground">{order.amount}</span>
                   </div>
-                )}
-
-                {activeTab === "timeline" && (
-                  <div className="space-y-4">
-                    {orderTimeline.map((event, idx) => (
-                      <div key={idx} className={`flex gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-                        <div className={`flex flex-col items-center ${isRTL ? "items-end" : ""}`}>
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
-                            event.completed ? "bg-accent text-white" : "bg-secondary text-muted-foreground"
-                          }`}>
-                            {event.icon}
-                          </div>
-                          {idx < orderTimeline.length - 1 && (
-                            <div className={`w-0.5 h-12 ${event.completed ? "bg-accent" : "bg-border"}`}></div>
-                          )}
-                        </div>
-                        <div className={`flex-1 pt-2 ${isRTL ? "text-right" : ""}`}>
-                          <p className="font-semibold text-foreground">{event.status}</p>
-                          <p className="text-sm text-muted-foreground">{event.date}</p>
-                        </div>
-                      </div>
-                    ))}
+                  <div className={`flex justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
+                    <span className="text-sm text-muted-foreground">Date</span>
+                    <span className="text-sm font-semibold text-foreground">{order.date}</span>
                   </div>
-                )}
-
-                {activeTab === "notes" && (
-                  <div className="space-y-4">
-                    <div className="p-4 bg-secondary rounded-lg border border-border">
-                      <p className="text-sm text-foreground">Order confirmed and payment received. Preparing items for shipment.</p>
-                      <p className="text-xs text-muted-foreground mt-2">Added by Admin • Feb 20, 2024 10:45 AM</p>
-                    </div>
-                    <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                      <Input placeholder="Add a note..." className="bg-secondary border-0" />
-                      <Button className="bg-primary hover:bg-blue-700 text-white">
-                        <Send size={16} />
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Card>
+                </div>
+                <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <Button variant="outline" className="flex-1 border-border">
+                    <Eye size={16} />
+                  </Button>
+                  <Button variant="outline" className="flex-1 border-border">
+                    <Edit size={16} />
+                  </Button>
+                  <Button variant="outline" className="flex-1 border-border text-destructive">
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
+              </Card>
+            ))}
           </div>
+        )}
 
-          {/* Right Column - Customer & Summary */}
-          <div className="space-y-6">
-            {/* Customer Info */}
-            <Card className="bg-white shadow-sm border-0 p-6">
-              <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
-                Customer
-              </h3>
-              <div className={`flex items-center gap-3 mb-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-700 rounded-full flex items-center justify-center text-white font-bold">
-                  JD
-                </div>
-                <div className={isRTL ? "text-right" : ""}>
-                  <p className="font-semibold text-foreground">John Doe</p>
-                  <p className="text-xs text-muted-foreground">Customer ID: CUST-001</p>
-                </div>
-              </div>
-              <div className="space-y-3 border-t border-border pt-4">
-                <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <Mail size={16} className="text-muted-foreground" />
-                  <p className="text-sm text-foreground">john@example.com</p>
-                </div>
-                <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <Phone size={16} className="text-muted-foreground" />
-                  <p className="text-sm text-foreground">+1 (555) 123-4567</p>
-                </div>
-              </div>
-            </Card>
-
-            {/* Shipping Address */}
-            <Card className="bg-white shadow-sm border-0 p-6">
-              <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
-                Shipping Address
-              </h3>
-              <div className={`space-y-2 ${isRTL ? "text-right" : ""}`}>
-                <p className="font-medium text-foreground">John Doe</p>
-                <p className="text-sm text-foreground">123 Main Street</p>
-                <p className="text-sm text-foreground">New York, NY 10001</p>
-                <p className="text-sm text-foreground">United States</p>
-              </div>
-            </Card>
-
-            {/* Order Summary */}
-            <Card className="bg-white shadow-sm border-0 p-6">
-              <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
-                Order Summary
-              </h3>
-              <div className={`space-y-3 ${isRTL ? "text-right" : ""}`}>
-                <div className={`flex justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <span className="text-sm text-muted-foreground">Subtotal</span>
-                  <span className="text-sm font-medium text-foreground">$2,863</span>
-                </div>
-                <div className={`flex justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <span className="text-sm text-muted-foreground">Shipping</span>
-                  <span className="text-sm font-medium text-foreground">$25</span>
-                </div>
-                <div className={`flex justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <span className="text-sm text-muted-foreground">Tax</span>
-                  <span className="text-sm font-medium text-foreground">$229</span>
-                </div>
-                <div className={`flex justify-between border-t border-border pt-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <span className="font-semibold text-foreground">Total</span>
-                  <span className="font-bold text-lg text-primary">$3,117</span>
-                </div>
-              </div>
-            </Card>
+        {/* Create Modal */}
+        <FormModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          title="Create New Order"
+          description="Enter order details"
+          onSubmit={() => {
+            setIsCreateModalOpen(false);
+            setFormData({ orderNo: "", customer: "", amount: "", status: "" });
+          }}
+          submitLabel="Create Order"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground">Order Number</label>
+              <Input placeholder="ORD-2024-XXX" className="mt-1" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Customer Name</label>
+              <Input placeholder="Enter customer name" className="mt-1" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Amount</label>
+              <Input placeholder="Enter amount" className="mt-1" />
+            </div>
           </div>
-        </div>
+        </FormModal>
+
+        {/* Edit Modal */}
+        <FormModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          title="Edit Order"
+          description="Update order details"
+          onSubmit={() => {
+            setIsEditModalOpen(false);
+            setFormData({ orderNo: "", customer: "", amount: "", status: "" });
+          }}
+          submitLabel="Update Order"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground">Order Number</label>
+              <Input value={formData.orderNo} placeholder="ORD-2024-XXX" className="mt-1" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Customer Name</label>
+              <Input value={formData.customer} placeholder="Enter customer name" className="mt-1" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Amount</label>
+              <Input value={formData.amount} placeholder="Enter amount" className="mt-1" />
+            </div>
+          </div>
+        </FormModal>
       </div>
     </DashboardLayout>
   );

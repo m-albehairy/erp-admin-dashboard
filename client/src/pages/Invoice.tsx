@@ -1,7 +1,9 @@
+import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Printer, Download, Send, Eye } from "lucide-react";
+import { ChevronLeft, Printer, Download, Send, Eye, FileText, CreditCard, Truck } from "lucide-react";
+import TabsWithIcons from "@/components/TabsWithIcons";
 import { useSettings } from "@/contexts/SettingsContext";
 
 export default function Invoice() {

@@ -2,7 +2,8 @@ import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Star, ShoppingCart, Edit, MoreVertical, TrendingUp, Package, DollarSign, Eye } from "lucide-react";
+import { ChevronLeft, Star, ShoppingCart, Edit, MoreVertical, TrendingUp, Package, DollarSign, Eye, Info, Zap, MessageCircle } from "lucide-react";
+import TabsWithIcons from "@/components/TabsWithIcons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -146,21 +147,16 @@ export default function ProductDetails() {
           <div className="lg:col-span-2">
             {/* Tabs */}
             <Card className="bg-white shadow-sm border-0 p-0 overflow-hidden mb-6">
-              <div className={`flex border-b border-border ${isRTL ? "flex-row-reverse" : ""}`}>
-                {["overview", "specs", "reviews"].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`flex-1 px-6 py-4 text-sm font-medium transition-colors border-b-2 ${
-                      activeTab === tab
-                        ? "border-primary text-primary"
-                        : "border-transparent text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
-                ))}
-              </div>
+              <TabsWithIcons
+                tabs={[
+                  { id: "overview", label: "Overview", icon: Info },
+                  { id: "specs", label: "Specifications", icon: Zap },
+                  { id: "reviews", label: "Reviews", icon: MessageCircle },
+                ]}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                isRTL={isRTL}
+              />
 
               {/* Tab Content */}
               <div className="p-6">

@@ -3,7 +3,8 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Mail, Phone, MapPin, Calendar, DollarSign, ShoppingCart, TrendingUp, MessageSquare, Edit, MoreVertical, Award } from "lucide-react";
+import { ChevronLeft, Mail, Phone, MapPin, Calendar, DollarSign, ShoppingCart, TrendingUp, MessageSquare, Edit, MoreVertical, Award, Info, History, MessageCircle } from "lucide-react";
+import TabsWithIcons from "@/components/TabsWithIcons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -86,6 +87,7 @@ export default function CustomerDetails() {
               <ShoppingCart size={24} className="text-primary" />
             </div>
           </Card>
+
           <Card className="p-4 bg-white shadow-sm border-0">
             <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
               <div className={isRTL ? "text-right" : ""}>
@@ -121,21 +123,16 @@ export default function CustomerDetails() {
           <div className="lg:col-span-2 space-y-6">
             {/* Tabs */}
             <Card className="bg-white shadow-sm border-0 p-0 overflow-hidden">
-              <div className={`flex border-b border-border ${isRTL ? "flex-row-reverse" : ""}`}>
-                {["overview", "orders", "communication"].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`flex-1 px-6 py-4 text-sm font-medium transition-colors border-b-2 ${
-                      activeTab === tab
-                        ? "border-primary text-primary"
-                        : "border-transparent text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
-                ))}
-              </div>
+              <TabsWithIcons
+                tabs={[
+                  { id: "overview", label: "Overview", icon: Info },
+                  { id: "orders", label: "Orders", icon: History },
+                  { id: "communication", label: "Communication", icon: MessageCircle },
+                ]}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                isRTL={isRTL}
+              />
 
               {/* Tab Content */}
               <div className="p-6">
