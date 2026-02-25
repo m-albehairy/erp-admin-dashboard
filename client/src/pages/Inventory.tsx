@@ -1,5 +1,5 @@
 import { useState } from "react";
-import FormModal from "@/components/FormModal";
+import AnimatedModal from "@/components/AnimatedModal";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -429,16 +429,16 @@ export default function Inventory() {
         )}
 
         {/* Create Product Modal */}
-        <FormModal
+        <AnimatedModal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
           title="Add New Product"
-          description="Enter product details to add a new item to inventory"
           onSubmit={() => {
             setIsCreateModalOpen(false);
             setFormData({ name: "", sku: "", quantity: "", price: "" });
           }}
           submitLabel="Add Product"
+          size="md"
         >
           <div className="space-y-4">
             <div>
@@ -479,14 +479,13 @@ export default function Inventory() {
               />
             </div>
           </div>
-        </FormModal>
+        </AnimatedModal>
 
         {/* Edit Product Modal */}
-        <FormModal
+        <AnimatedModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           title="Edit Product"
-          description="Update product details"
           onSubmit={() => {
             setIsEditModalOpen(false);
             setFormData({ name: "", sku: "", quantity: "", price: "" });
@@ -532,7 +531,7 @@ export default function Inventory() {
               />
             </div>
           </div>
-        </FormModal>
+        </AnimatedModal>
       </div>
     </DashboardLayout>
   );

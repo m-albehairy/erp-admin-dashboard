@@ -308,7 +308,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                   <div className="px-2 py-2">
                     <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Theme Color</p>
                     <div className="grid grid-cols-3 gap-2">
-                      {["blue", "purple", "green", "orange", "red", "pink"].map((color) => {
+                      {["blue", "purple", "green", "orange", "red", "pink", "teal", "indigo", "cyan", "amber", "rose", "slate"].map((color) => {
                         const colorMap: Record<string, string> = {
                           blue: "#0066CC",
                           purple: "#7C3AED",
@@ -316,6 +316,12 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                           orange: "#F97316",
                           red: "#EF4444",
                           pink: "#EC4899",
+                          teal: "#14B8A6",
+                          indigo: "#4F46E5",
+                          cyan: "#06B6D4",
+                          amber: "#F59E0B",
+                          rose: "#F43F5E",
+                          slate: "#64748B",
                         };
                         return (
                           <button
@@ -328,6 +334,12 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                                 orange: { primary: "#F97316", sidebar: "#EA580C", chart: ["#FDBA74", "#F97316", "#EA580C", "#C2410C", "#92220C"] },
                                 red: { primary: "#EF4444", sidebar: "#DC2626", chart: ["#FCA5A5", "#EF4444", "#DC2626", "#B91C1C", "#7F1D1D"] },
                                 pink: { primary: "#EC4899", sidebar: "#DB2777", chart: ["#F472B6", "#EC4899", "#DB2777", "#BE185D", "#831843"] },
+                                teal: { primary: "#14B8A6", sidebar: "#0D9488", chart: ["#5EEAD4", "#14B8A6", "#0D9488", "#0F766E", "#134E4A"] },
+                                indigo: { primary: "#4F46E5", sidebar: "#4338CA", chart: ["#A5B4FC", "#4F46E5", "#4338CA", "#3730A3", "#312E81"] },
+                                cyan: { primary: "#06B6D4", sidebar: "#0891B2", chart: ["#22D3EE", "#06B6D4", "#0891B2", "#0E7490", "#164E63"] },
+                                amber: { primary: "#F59E0B", sidebar: "#D97706", chart: ["#FCD34D", "#F59E0B", "#D97706", "#B45309", "#78350F"] },
+                                rose: { primary: "#F43F5E", sidebar: "#E11D48", chart: ["#FB7185", "#F43F5E", "#E11D48", "#BE185D", "#831843"] },
+                                slate: { primary: "#64748B", sidebar: "#475569", chart: ["#CBD5E1", "#64748B", "#475569", "#334155", "#1E293B"] },
                               };
                               const c = colors[color];
                               document.documentElement.style.setProperty("--primary", c.primary);
