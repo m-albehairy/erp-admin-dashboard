@@ -4,6 +4,7 @@ import { Menu, X, Bell, Settings, LogOut, User, Search, Globe, Maximize2, Moon, 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Breadcrumb from "@/components/Breadcrumb";
+import NotificationCenter from "@/components/NotificationCenter";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -390,10 +391,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
               </DropdownMenu>
 
               {/* Notifications */}
-              <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative">
-                <Bell size={18} />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full"></span>
-              </Button>
+              <NotificationCenter />
 
               {/* Settings */}
               <Link href="/settings">

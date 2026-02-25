@@ -1,6 +1,8 @@
 import { useState } from "react";
 import AnimatedModal from "@/components/AnimatedModal";
 import DashboardLayout from "@/components/DashboardLayout";
+import BulkActions from "@/components/BulkActions";
+import AdvancedFilters from "@/components/AdvancedFilters";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,6 +67,8 @@ export default function Inventory() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", sku: "", quantity: "", price: "" });
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
 
   const totalPages = Math.ceil(inventoryData.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
@@ -127,18 +131,59 @@ export default function Inventory() {
           </Card>
         </div>
 
+        {/* Bulk Actions */}
+        {selectedItems.length > 0 && (
+          <BulkActions
+            selectedCount={selectedItems.length}
+            isAllSelected={selectedItems.length === paginatedData.length}
+            onSelectAll={(checked) => {
+              if (checked) {
+                setSelectedItems(paginatedData.map(item => item.id));
+              } else {
+                setSelectedItems([]);
+              }
+            }}
+            onDelete={() => {
+              setSelectedItems([]);
+            }}
+            onExport={() => {
+              handleExport();
+              setSelectedItems([]);
+            }}
+            onStatusUpdate={() => {
+              setSelectedItems([]);
+            }}
+          />
+        )}
+
         {/* Search and Advanced Controls - Single Row */}
         <Card className="p-4 bg-white shadow-sm border-0">
           <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
             {/* Search Bar */}
             <div className="relative flex-1 min-w-xs">
-              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground ${isRTL ? "right-3" : "left-3"}`} />
+              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-3" : "left-3"}`} />
               <Input 
                 type="text" 
                 placeholder="Search by product name or SKU..." 
                 className={`${isRTL ? "pr-10 text-right" : "pl-10"} bg-secondary border-0`} 
               />
             </div>
+
+            {/* Advanced Filters */}
+            <AdvancedFilters
+              onApplyFilters={(filters) => setAppliedFilters(filters)}
+              onClearFilters={() => setAppliedFilters({})}
+              filterOptions={{
+                status: {
+                  label: "Status",
+                  options: ["In Stock", "Low Stock", "Out of Stock"],
+                },
+                priceRange: {
+                  label: "Price Range",
+                  options: ["Under $50", "$50-$200", "$200-$500", "Over $500"],
+                },
+              }}
+            />
 
             {/* Date Range Picker */}
             <DropdownMenu>
@@ -250,6 +295,20 @@ export default function Inventory() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border bg-secondary/50">
+                    <th className="px-6 py-4 text-sm font-semibold text-foreground text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.length === paginatedData.length && paginatedData.length > 0}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedItems(paginatedData.map(item => item.id));
+                          } else {
+                            setSelectedItems([]);
+                          }
+                        }}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                    </th>
                     <th className={`px-6 py-4 text-sm font-semibold text-foreground ${isRTL ? "text-right" : "text-left"}`}>Product Name</th>
                     <th className={`px-6 py-4 text-sm font-semibold text-foreground ${isRTL ? "text-right" : "text-left"}`}>SKU</th>
                     <th className={`px-6 py-4 text-sm font-semibold text-foreground ${isRTL ? "text-right" : "text-left"}`}>Quantity</th>
@@ -262,6 +321,20 @@ export default function Inventory() {
                 <tbody>
                   {paginatedData.map((item) => (
                     <tr key={item.id} className="border-b border-border hover:bg-secondary/30 transition-colors">
+                      <td className="px-6 py-4 text-sm text-foreground font-medium text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedItems([...selectedItems, item.id]);
+                            } else {
+                              setSelectedItems(selectedItems.filter(id => id !== item.id));
+                            }
+                          }}
+                          className="w-4 h-4 cursor-pointer"
+                        />
+                      </td>
                       <td className={`px-6 py-4 text-sm text-foreground font-medium ${isRTL ? "text-right" : "text-left"}`}>{item.name}</td>
                       <td className={`px-6 py-4 text-sm text-muted-foreground font-mono ${isRTL ? "text-right" : "text-left"}`}>{item.sku}</td>
                       <td className={`px-6 py-4 text-sm text-foreground font-semibold ${isRTL ? "text-right" : "text-left"}`}>{item.quantity}</td>
