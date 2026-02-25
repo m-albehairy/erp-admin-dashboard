@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, Edit, Trash2, Shield, Clock, CheckCircle, AlertCircle, Mail, Phone, MapPin } from "lucide-react";
+import AnimatedModal from "@/components/AnimatedModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +17,9 @@ export default function EmployeeManagement() {
   const { language } = useSettings();
   const isRTL = language === "ar";
   const [searchTerm, setSearchTerm] = useState("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
+  const [editFormData, setEditFormData] = useState({ name: "", email: "", phone: "", role: "", department: "" });
 
   const breadcrumbs = [
     { label: "Dashboard", href: "/" },
@@ -133,7 +137,11 @@ export default function EmployeeManagement() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align={isRTL ? "start" : "end"}>
-                    <DropdownMenuItem>Edit</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => {
+                      setSelectedEmployee(employee);
+                      setEditFormData({ name: employee.name, email: employee.email, phone: employee.phone, role: employee.role, department: employee.department });
+                      setIsEditModalOpen(true);
+                    }}>Edit</DropdownMenuItem>
                     <DropdownMenuItem>View Details</DropdownMenuItem>
                     <DropdownMenuItem>Manage Permissions</DropdownMenuItem>
                     <DropdownMenuItem className="text-destructive">Remove</DropdownMenuItem>
@@ -198,6 +206,67 @@ export default function EmployeeManagement() {
             ))}
           </div>
         </Card>
+
+        {/* Edit Employee Modal */}
+        <AnimatedModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          title="Edit Employee"
+          onSubmit={() => {
+            setIsEditModalOpen(false);
+          }}
+          submitLabel="Update Employee"
+          size="md"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground">Full Name</label>
+              <Input
+                placeholder="Enter full name"
+                value={editFormData.name}
+                onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Email</label>
+              <Input
+                type="email"
+                placeholder="Enter email address"
+                value={editFormData.email}
+                onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Phone</label>
+              <Input
+                placeholder="Enter phone number"
+                value={editFormData.phone}
+                onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Role</label>
+              <Input
+                placeholder="Enter job role"
+                value={editFormData.role}
+                onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Department</label>
+              <Input
+                placeholder="Enter department"
+                value={editFormData.department}
+                onChange={(e) => setEditFormData({ ...editFormData, department: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+          </div>
+        </AnimatedModal>
       </div>
     </DashboardLayout>
   );

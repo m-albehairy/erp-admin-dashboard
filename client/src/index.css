@@ -7,10 +7,10 @@
   --font-sans: "Poppins", sans-serif;
   --font-display: "Poppins", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 5px;
+  --radius-xl: 6px;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -48,6 +48,9 @@
 :root {
   --primary: #EF4444;
   --primary-foreground: #FFFFFF;
+  --form-border: #e9edf4;
+  --form-text: #202c4b;
+  --form-bg: #fff;
   --sidebar-primary: #DC2626;
   --sidebar-primary-foreground: #FFFFFF;
   --chart-1: #FCA5A5;
@@ -190,6 +193,68 @@
   button:not(:disabled) {
     transition: all 0.5s ease-in-out;
     border-radius: 5px;
+  }
+
+  /* Form Controls - Independent of theme */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  input[type="search"],
+  input[type="url"],
+  input[type="tel"],
+  textarea,
+  select {
+    border-color: var(--form-border, #e9edf4) !important;
+    color: var(--form-text, #202c4b) !important;
+    background-color: var(--form-bg, #fff) !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    line-height: 1.6 !important;
+    border-radius: 5px !important;
+    padding: 0.5rem 0.625rem !important;
+    height: 38px !important;
+    transition: all 0.5s !important;
+    border: 1px solid var(--form-border, #e9edf4) !important;
+  }
+
+  textarea {
+    height: auto !important;
+    min-height: 100px !important;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="number"]:focus,
+  input[type="date"]:focus,
+  input[type="time"]:focus,
+  input[type="search"]:focus,
+  input[type="url"]:focus,
+  input[type="tel"]:focus,
+  textarea:focus,
+  select:focus {
+    outline: none !important;
+    border-color: #0066CC !important;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1) !important;
+  }
+
+  .dark input[type="text"],
+  .dark input[type="email"],
+  .dark input[type="password"],
+  .dark input[type="number"],
+  .dark input[type="date"],
+  .dark input[type="time"],
+  .dark input[type="search"],
+  .dark input[type="url"],
+  .dark input[type="tel"],
+  .dark textarea,
+  .dark select {
+    background-color: #f8f9fa !important;
+    border-color: #e9edf4 !important;
+    color: #202c4b !important;
   }
 
   /* Apply to tables */
