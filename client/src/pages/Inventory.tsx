@@ -1,4 +1,5 @@
 import { useState } from "react";
+import FormModal from "@/components/FormModal";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,9 @@ export default function Inventory() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [dateRange, setDateRange] = useState("all");
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: "", sku: "", quantity: "", price: "" });
 
   const totalPages = Math.ceil(inventoryData.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
@@ -102,7 +106,7 @@ export default function Inventory() {
             <h2 className="font-display font-bold text-2xl text-foreground">Inventory Management</h2>
             <p className="text-sm text-muted-foreground mt-1">Manage your product inventory and stock levels</p>
           </div>
-          <Button className="bg-primary hover:bg-blue-700 text-white flex items-center gap-2 w-full sm:w-auto">
+          <Button onClick={() => setIsCreateModalOpen(true)} className="bg-primary hover:bg-blue-700 text-white flex items-center gap-2 w-full sm:w-auto">
             <Plus size={18} />
             Add Product
           </Button>
@@ -380,7 +384,10 @@ export default function Inventory() {
                   </div>
                 </div>
                 <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <Button variant="outline" className="flex-1 border-border">
+                  <Button onClick={() => {
+                    setFormData({ name: item.name, sku: item.sku, quantity: item.quantity.toString(), price: item.price });
+                    setIsEditModalOpen(true);
+                  }} variant="outline" className="flex-1 border-border">
                     <Edit size={16} />
                   </Button>
                   <Button variant="outline" className="flex-1 border-border text-destructive">
@@ -420,6 +427,112 @@ export default function Inventory() {
             </div>
           </div>
         )}
+
+        {/* Create Product Modal */}
+        <FormModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          title="Add New Product"
+          description="Enter product details to add a new item to inventory"
+          onSubmit={() => {
+            setIsCreateModalOpen(false);
+            setFormData({ name: "", sku: "", quantity: "", price: "" });
+          }}
+          submitLabel="Add Product"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground">Product Name</label>
+              <Input
+                placeholder="Enter product name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">SKU</label>
+              <Input
+                placeholder="Enter SKU"
+                value={formData.sku}
+                onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Quantity</label>
+              <Input
+                type="number"
+                placeholder="Enter quantity"
+                value={formData.quantity}
+                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Price</label>
+              <Input
+                placeholder="Enter price"
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+          </div>
+        </FormModal>
+
+        {/* Edit Product Modal */}
+        <FormModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          title="Edit Product"
+          description="Update product details"
+          onSubmit={() => {
+            setIsEditModalOpen(false);
+            setFormData({ name: "", sku: "", quantity: "", price: "" });
+          }}
+          submitLabel="Update Product"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground">Product Name</label>
+              <Input
+                placeholder="Enter product name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">SKU</label>
+              <Input
+                placeholder="Enter SKU"
+                value={formData.sku}
+                onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Quantity</label>
+              <Input
+                type="number"
+                placeholder="Enter quantity"
+                value={formData.quantity}
+                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Price</label>
+              <Input
+                placeholder="Enter price"
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+          </div>
+        </FormModal>
       </div>
     </DashboardLayout>
   );

@@ -4,9 +4,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Inter", sans-serif;
-  --font-display: "Geist", sans-serif;
-  --font-mono: "Fira Code", monospace;
+  --font-sans: "Poppins", sans-serif;
+  --font-display: "Poppins", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -121,19 +121,19 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans text-sm;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display font-bold;
   }
   h1 {
-    @apply text-3xl;
+    @apply text-xl;
   }
   h2 {
-    @apply text-2xl;
+    @apply text-lg;
   }
   h3 {
-    @apply text-lg;
+    @apply text-base;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),

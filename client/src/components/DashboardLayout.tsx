@@ -270,6 +270,58 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                 </DropdownMenuContent>
               </DropdownMenu>
 
+              {/* Theme Color Selector */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+                    <div className="w-5 h-5 rounded-full bg-primary"></div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-48">
+                  <div className="px-2 py-2">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Theme Color</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {["blue", "purple", "green", "orange", "red", "pink"].map((color) => {
+                        const colorMap: Record<string, string> = {
+                          blue: "#0066CC",
+                          purple: "#7C3AED",
+                          green: "#10B981",
+                          orange: "#F97316",
+                          red: "#EF4444",
+                          pink: "#EC4899",
+                        };
+                        return (
+                          <button
+                            key={color}
+                            onClick={() => {
+                              const colors: Record<string, { primary: string; sidebar: string; chart: string[] }> = {
+                                blue: { primary: "#0066CC", sidebar: "#0052A3", chart: ["#3B82F6", "#0066CC", "#0052A3", "#003D7A", "#002E5C"] },
+                                purple: { primary: "#7C3AED", sidebar: "#6D28D9", chart: ["#A78BFA", "#7C3AED", "#6D28D9", "#5B21B6", "#4C1D95"] },
+                                green: { primary: "#10B981", sidebar: "#059669", chart: ["#6EE7B7", "#10B981", "#059669", "#047857", "#065F46"] },
+                                orange: { primary: "#F97316", sidebar: "#EA580C", chart: ["#FDBA74", "#F97316", "#EA580C", "#C2410C", "#92220C"] },
+                                red: { primary: "#EF4444", sidebar: "#DC2626", chart: ["#FCA5A5", "#EF4444", "#DC2626", "#B91C1C", "#7F1D1D"] },
+                                pink: { primary: "#EC4899", sidebar: "#DB2777", chart: ["#F472B6", "#EC4899", "#DB2777", "#BE185D", "#831843"] },
+                              };
+                              const c = colors[color];
+                              document.documentElement.style.setProperty("--primary", c.primary);
+                              document.documentElement.style.setProperty("--sidebar-primary", c.sidebar);
+                              document.documentElement.style.setProperty("--chart-1", c.chart[0]);
+                              document.documentElement.style.setProperty("--chart-2", c.chart[1]);
+                              document.documentElement.style.setProperty("--chart-3", c.chart[2]);
+                              document.documentElement.style.setProperty("--chart-4", c.chart[3]);
+                              document.documentElement.style.setProperty("--chart-5", c.chart[4]);
+                            }}
+                            className="w-8 h-8 rounded-full border-2 border-border hover:border-foreground transition-all"
+                            style={{ backgroundColor: colorMap[color] }}
+                            title={color}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               {/* Notifications */}
               <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative">
                 <Bell size={18} />
@@ -316,7 +368,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
 
           {/* Breadcrumb */}
           {breadcrumbs && breadcrumbs.length > 0 && (
-            <div className={`px-6 py-2 bg-secondary border-t border-border ${isRTL ? "text-right" : ""}`}>
+            <div className={`px-6 py-2 ${isRTL ? "text-right" : ""}`}>
               <Breadcrumb items={breadcrumbs} />
             </div>
           )}
