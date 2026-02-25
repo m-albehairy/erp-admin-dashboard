@@ -158,13 +158,27 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
         } bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col ${isRTL ? "border-r-0 border-l" : ""}`}
       >
         {/* Logo Section */}
-        <div className={`p-6 border-b border-sidebar-border ${isRTL ? "text-right" : ""}`}>
+        <div className={`p-6 border-b border-sidebar-border space-y-4 ${isRTL ? "text-right" : ""}`}>
           <Link href="/" className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-lg">
               E
             </div>
             {sidebarOpen && <span className="font-display font-bold text-lg text-foreground">ERP</span>}
           </Link>
+
+          {sidebarOpen && (
+            <div className="bg-sidebar-accent/50 rounded-lg p-3 border border-sidebar-border/50">
+              <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                  AC
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-sidebar-foreground truncate">Acme Corp</p>
+                  <p className="text-xs text-muted-foreground truncate">Premium Plan</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Navigation Items */}
