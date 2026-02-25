@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, Filter, Download, Printer, RotateCcw, Calendar, Grid3x3, List } from "lucide-react";
+import DateRangePicker from "@/components/DateRangePicker";
+import { Search, Plus, Filter, Download, Printer, RotateCcw, Grid3x3, List } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,7 +36,6 @@ export default function TableControls({
   addButtonLabel = "Add New",
 }: TableControlsProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateRange, setDateRange] = useState("all");
   const [sortBy, setSortBy] = useState("name");
 
   const handleSearch = (query: string) => {
@@ -43,8 +43,12 @@ export default function TableControls({
     onSearch?.(query);
   };
 
+  const handleDateRangeChange = (startDate: Date, endDate: Date) => {
+    console.log("Date range selected:", startDate, endDate);
+  };
+
   return (
-    <div className={`space-y-4 ${isRTL ? "text-right" : ""}`}>
+      <div className={`space-y-4 ${isRTL ? "text-right" : ""}`}>
       {/* Search and Quick Actions */}
       <div className={`flex flex-col sm:flex-row gap-3 items-start sm:items-center ${isRTL ? "flex-row-reverse" : ""}`}>
         {/* Search Input */}
@@ -55,28 +59,14 @@ export default function TableControls({
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
-            className={`${isRTL ? "pr-10 text-right" : "pl-10"} bg-secondary border-0 rounded-lg focus:ring-2 focus:ring-primary w-full`}
+            className={`${isRTL ? "pr-12 text-right" : "pl-12"} bg-secondary border-0 rounded-lg focus:ring-2 focus:ring-primary w-full`}
           />
         </div>
 
         {/* Action Buttons */}
         <div className={`flex gap-2 w-full sm:w-auto ${isRTL ? "flex-row-reverse" : ""}`}>
-          {/* Date Range */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="border-border gap-2 flex-1 sm:flex-none">
-                <Calendar size={16} />
-                <span className="hidden sm:inline text-xs">Date</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align={isRTL ? "start" : "end"}>
-              {["All Time", "Today", "This Week", "This Month", "Last 30 Days", "Last 90 Days"].map((range) => (
-                <DropdownMenuItem key={range} onClick={() => setDateRange(range)}>
-                  {range}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Date Range Picker */}
+          <DateRangePicker isRTL={isRTL} onDateRangeChange={handleDateRangeChange} />
 
           {/* Sort */}
           <DropdownMenu>
