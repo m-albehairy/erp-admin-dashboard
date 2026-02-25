@@ -161,11 +161,11 @@ export default function Inventory() {
           <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
             {/* Search Bar */}
             <div className="relative flex-1 min-w-xs">
-              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-3" : "left-3"}`} />
+              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-4" : "left-4"}`} />
               <Input 
                 type="text" 
                 placeholder="Search by product name or SKU..." 
-                className={`${isRTL ? "pr-10 text-right" : "pl-10"} bg-secondary border-0`} 
+                className={`${isRTL ? "pr-12 text-right" : "pl-12"} bg-secondary border-0`} 
               />
             </div>
 

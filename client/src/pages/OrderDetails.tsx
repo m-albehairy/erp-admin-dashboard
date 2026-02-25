@@ -2,10 +2,12 @@ import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import TableControls from "@/components/TableControls";
 import AnimatedModal from "@/components/AnimatedModal";
+import BulkActions from "@/components/BulkActions";
+import AdvancedFilters from "@/components/AdvancedFilters";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, Edit, Trash2, Eye } from "lucide-react";
+import { ChevronLeft, ChevronRight, Edit, Trash2, Eye, Search } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,6 +53,8 @@ export default function OrderDetails() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [formData, setFormData] = useState({ orderNo: "", customer: "", amount: "", status: "" });
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
 
   const totalPages = Math.ceil(ordersData.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
@@ -111,18 +115,70 @@ export default function OrderDetails() {
           </Card>
         </div>
 
-        {/* Table Controls */}
-        <TableControls
-          onSearch={() => {}}
-          onAddNew={() => setIsCreateModalOpen(true)}
-          onPrint={handlePrint}
-          onExport={handleExport}
-          onReload={handleReload}
-          onViewChange={setViewMode}
-          viewMode={viewMode}
-          isRTL={isRTL}
-          addButtonLabel="Create Order"
-        />
+        {/* Bulk Actions */}
+        {selectedItems.length > 0 && (
+          <BulkActions
+            selectedCount={selectedItems.length}
+            onDelete={() => {
+              setSelectedItems([]);
+            }}
+            onExport={() => {
+              handleExport();
+              setSelectedItems([]);
+            }}
+            onStatusUpdate={() => {
+              setSelectedItems([]);
+            }}
+            onSelectAll={() => {
+              setSelectedItems(paginatedData.map(item => item.id));
+            }}
+            isAllSelected={selectedItems.length === paginatedData.length}
+          />
+        )}
+
+        {/* Search and Advanced Controls - Single Row */}
+        <Card className="p-4 bg-white shadow-sm border-0">
+          <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
+            {/* Search Bar */}
+            <div className="relative flex-1 min-w-xs">
+              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-4" : "left-4"}`} />
+              <Input 
+                type="text" 
+                placeholder="Search by order number or customer..." 
+                className={`${isRTL ? "pr-12 text-right" : "pl-12"} bg-secondary border-0`} 
+              />
+            </div>
+
+            {/* Advanced Filters */}
+            <AdvancedFilters
+              onApplyFilters={(filters) => setAppliedFilters(filters)}
+              onClearFilters={() => setAppliedFilters({})}
+              filterOptions={{
+                status: {
+                  label: "Status",
+                  options: ["Pending", "In Transit", "Completed", "Cancelled"],
+                },
+                dateRange: {
+                  label: "Date Range",
+                  options: ["Last 7 days", "Last 30 days", "Last 90 days"],
+                },
+              }}
+            />
+
+            {/* Table Controls */}
+            <TableControls
+              onSearch={() => {}}
+              onAddNew={() => setIsCreateModalOpen(true)}
+              onPrint={handlePrint}
+              onExport={handleExport}
+              onReload={handleReload}
+              onViewChange={setViewMode}
+              viewMode={viewMode}
+              isRTL={isRTL}
+              addButtonLabel="Create Order"
+            />
+          </div>
+        </Card>
 
         {/* Table View */}
         {viewMode === "table" && (
@@ -131,6 +187,20 @@ export default function OrderDetails() {
               <table className="w-full">
                 <thead className="bg-secondary border-b border-border">
                   <tr>
+                    <th className="px-6 py-3 text-center text-xs font-semibold text-foreground">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.length === paginatedData.length && paginatedData.length > 0}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedItems(paginatedData.map(item => item.id));
+                          } else {
+                            setSelectedItems([]);
+                          }
+                        }}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                    </th>
                     <th className={`px-6 py-3 text-left text-xs font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>Order No</th>
                     <th className={`px-6 py-3 text-left text-xs font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>Customer</th>
                     <th className={`px-6 py-3 text-left text-xs font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>Amount</th>
@@ -142,6 +212,20 @@ export default function OrderDetails() {
                 <tbody className="divide-y divide-border">
                   {paginatedData.map((order) => (
                     <tr key={order.id} className="hover:bg-secondary transition-colors">
+                      <td className="px-6 py-4 text-sm text-foreground font-medium text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(order.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedItems([...selectedItems, order.id]);
+                            } else {
+                              setSelectedItems(selectedItems.filter(id => id !== order.id));
+                            }
+                          }}
+                          className="w-4 h-4 cursor-pointer"
+                        />
+                      </td>
                       <td className={`px-6 py-4 text-sm font-medium text-foreground ${isRTL ? "text-right" : ""}`}>{order.orderNo}</td>
                       <td className={`px-6 py-4 text-sm text-foreground ${isRTL ? "text-right" : ""}`}>{order.customer}</td>
                       <td className={`px-6 py-4 text-sm font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>{order.amount}</td>
