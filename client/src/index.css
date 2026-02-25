@@ -237,8 +237,8 @@
   textarea:focus,
   select:focus {
     outline: none !important;
-    border-color: #0066CC !important;
-    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1) !important;
+    border-color: #e9edf4 !important;
+    box-shadow: 0 0 0 3px rgba(233, 237, 244, 0.3) !important;
   }
 
   .dark input[type="text"],

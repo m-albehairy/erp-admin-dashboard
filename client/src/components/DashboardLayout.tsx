@@ -255,7 +255,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
             {/* Center Search */}
             <div className="hidden md:flex flex-1 max-w-md mx-4">
               <div className="relative w-full">
-                <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground ${isRTL ? "right-3" : "left-3"}`} />
+                <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-3" : "left-3"}`} />
                 <Input
                   type="text"
                   placeholder="Search..."
@@ -297,7 +297,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-9 px-3 gap-2">
                     <Calendar size={16} />
-                    <span className="text-sm">{financialYear}</span>
+                    <span className="text-sm">FY: {financialYear}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align={isRTL ? "start" : "end"}>
@@ -319,8 +319,8 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                 <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-48">
                   <div className="px-2 py-2">
                     <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Theme Color</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {["blue", "purple", "green", "orange", "red", "pink", "teal", "indigo", "cyan", "amber", "rose", "slate"].map((color) => {
+                    <div className="grid grid-cols-4 gap-2">
+                      {["blue", "purple", "green", "orange", "red", "pink", "teal", "indigo", "cyan", "amber", "rose", "slate", "darkgreen", "darkred", "darkblue", "black", "maroon", "darkgray", "navy", "darkpurple"].map((color) => {
                         const colorMap: Record<string, string> = {
                           blue: "#0066CC",
                           purple: "#7C3AED",
@@ -334,6 +334,14 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                           amber: "#F59E0B",
                           rose: "#F43F5E",
                           slate: "#64748B",
+                          darkgreen: "#25671E",
+                          darkred: "#280905",
+                          darkblue: "#0D1A63",
+                          black: "#090040",
+                          maroon: "#3A0519",
+                          darkgray: "#2C3930",
+                          navy: "#09122C",
+                          darkpurple: "#2E073F",
                         };
                         return (
                           <button
@@ -352,6 +360,14 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                                 amber: { primary: "#F59E0B", sidebar: "#D97706", chart: ["#FCD34D", "#F59E0B", "#D97706", "#B45309", "#78350F"] },
                                 rose: { primary: "#F43F5E", sidebar: "#E11D48", chart: ["#FB7185", "#F43F5E", "#E11D48", "#BE185D", "#831843"] },
                                 slate: { primary: "#64748B", sidebar: "#475569", chart: ["#CBD5E1", "#64748B", "#475569", "#334155", "#1E293B"] },
+                                darkgreen: { primary: "#25671E", sidebar: "#1F5217", chart: ["#4A9D3F", "#25671E", "#1F5217", "#184010", "#122B0A"] },
+                                darkred: { primary: "#280905", sidebar: "#1F0704", chart: ["#5C1812", "#280905", "#1F0704", "#160503", "#0D0302"] },
+                                darkblue: { primary: "#0D1A63", sidebar: "#0A1350", chart: ["#1A3A9E", "#0D1A63", "#0A1350", "#070D3D", "#050829"] },
+                                black: { primary: "#090040", sidebar: "#070032", chart: ["#1A0080", "#090040", "#070032", "#050025", "#030018"] },
+                                maroon: { primary: "#3A0519", sidebar: "#2E0413", chart: ["#6B0A2E", "#3A0519", "#2E0413", "#22030D", "#160209"] },
+                                darkgray: { primary: "#2C3930", sidebar: "#242E26", chart: ["#556B61", "#2C3930", "#242E26", "#1A211D", "#121816"] },
+                                navy: { primary: "#09122C", sidebar: "#070D22", chart: ["#121E58", "#09122C", "#070D22", "#050819", "#030510"] },
+                                darkpurple: { primary: "#2E073F", sidebar: "#250532", chart: ["#5C0E7E", "#2E073F", "#250532", "#1A0424", "#110219"] },
                               };
                               const c = colors[color];
                               document.documentElement.style.setProperty("--primary", c.primary);
