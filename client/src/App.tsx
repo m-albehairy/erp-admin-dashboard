@@ -10,6 +10,14 @@ import Inventory from "./pages/Inventory";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import Showcase from "./pages/Showcase";
+import OrderDetails from "./pages/OrderDetails";
+import CustomerDetails from "./pages/CustomerDetails";
+import ProductDetails from "./pages/ProductDetails";
+import Invoice from "./pages/Invoice";
+import EmployeeManagement from "./pages/EmployeeManagement";
+import FinancialDashboard from "./pages/FinancialDashboard";
+import PurchaseOrders from "./pages/PurchaseOrders";
+import ReportsGenerator from "./pages/ReportsGenerator";
 
 
 function Router() {
@@ -20,6 +28,14 @@ function Router() {
       <Route path={"/"} component={Dashboard} />
       <Route path={"/inventory"} component={Inventory} />
       <Route path={"/analytics"} component={Analytics} />
+      <Route path={"/order-details"} component={OrderDetails} />
+      <Route path={"/customer-details"} component={CustomerDetails} />
+      <Route path={"/product-details"} component={ProductDetails} />
+      <Route path={"/invoice"} component={Invoice} />
+      <Route path={"/employees"} component={EmployeeManagement} />
+      <Route path={"/financial"} component={FinancialDashboard} />
+      <Route path={"/purchase-orders"} component={PurchaseOrders} />
+      <Route path={"/reports"} component={ReportsGenerator} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
