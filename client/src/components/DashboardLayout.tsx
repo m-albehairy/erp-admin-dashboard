@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import { useState, useEffect, useRef, ReactNode } from "react";
 import { Link } from "wouter";
 import { Menu, X, Bell, Settings, LogOut, User, Search, Globe, Maximize2, Moon, Sun, Calendar, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -38,9 +38,199 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
     }
     return [];
   });
+  const navContainerRef = useRef<HTMLDivElement>(null);
   const { theme, language, financialYear, toggleTheme, setLanguage, setFinancialYear } = useSettings();
 
   const isRTL = language === "ar";
+
+  // Arabic translations for menu items
+  const translations: Record<string, Record<string, string>> = {
+    en: {
+      "Dashboard": "Dashboard",
+      "SALES": "المبيعات",
+      "Customers": "العملاء",
+      "All Customers": "جميع العملاء",
+      "Customer Groups": "مجموعات العملاء",
+      "Quotations": "العروض",
+      "Sales Orders": "أوامر البيع",
+      "All Orders": "جميع الأوامر",
+      "Pending": "قيد الانتظار",
+      "Completed": "مكتمل",
+      "Sales Invoices": "فواتير البيع",
+      "Sales Returns": "مرتجعات البيع",
+      "Customer Receipts": "إيصالات العملاء",
+      "Customer Statements": "كشوفات العملاء",
+      "PURCHASES": "المشتريات",
+      "Vendors": "الموردون",
+      "All Vendors": "جميع الموردين",
+      "Vendor Groups": "مجموعات الموردين",
+      "Purchase Orders": "أوامر الشراء",
+      "Purchase Invoices": "فواتير الشراء",
+      "Purchase Returns": "مرتجعات الشراء",
+      "Vendor Payments": "مدفوعات الموردين",
+      "Vendor Statements": "كشوفات الموردين",
+      "INVENTORY": "المخزون",
+      "Products": "المنتجات",
+      "All Products": "جميع المنتجات",
+      "In Stock": "في المخزون",
+      "Low Stock": "مخزون منخفض",
+      "Product Categories": "فئات المنتجات",
+      "Units of Measure": "وحدات القياس",
+      "Warehouses": "المستودعات",
+      "Opening Stock": "المخزون الافتتاحي",
+      "Stock Adjustments": "تعديلات المخزون",
+      "Stock Transfers": "تحويلات المخزون",
+      "Stock Count": "جرد المخزون",
+      "Inventory Valuation": "تقييم المخزون",
+      "Stock Movement Report": "تقرير حركة المخزون",
+      "ACCOUNTING": "المحاسبة",
+      "Chart of Accounts": "دليل الحسابات",
+      "Journal Entries": "قيود اليوميات",
+      "Journal Types": "أنواع اليوميات",
+      "Opening Balances": "الأرصدة الافتتاحية",
+      "Fiscal Years": "السنوات المالية",
+      "Period Closing": "إغلاق الفترة",
+      "Account Statements": "كشوفات الحسابات",
+      "Trial Balance": "ميزان المراجعة",
+      "General Ledger": "الدفتر العام",
+      "Income Statement": "قائمة الدخل",
+      "Balance Sheet": "الميزانية العمومية",
+      "Cash Flow Statement": "قائمة التدفقات النقدية",
+      "TREASURY": "الخزانة",
+      "Cash Accounts": "حسابات النقد",
+      "Bank Accounts": "الحسابات البنكية",
+      "Receipts": "الإيصالات",
+      "Payments": "المدفوعات",
+      "Bank Transfers": "التحويلات البنكية",
+      "Bank Reconciliation": "التسوية البنكية",
+      "REPORTS": "التقارير",
+      "Sales Reports": "تقارير المبيعات",
+      "Purchase Reports": "تقارير المشتريات",
+      "Inventory Reports": "تقارير المخزون",
+      "Financial Reports": "التقارير المالية",
+      "Aging Reports": "تقارير الأعمار",
+      "Tax Reports": "التقارير الضريبية",
+      "SETTINGS": "الإعدادات",
+      "Company Profile": "ملف الشركة",
+      "Branches": "الفروع",
+      "Currencies": "العملات",
+      "Exchange Rates": "أسعار الصرف",
+      "Taxes": "الضرائب",
+      "Numbering Series": "سلاسل الترقيم",
+      "Payment Methods": "طرق الدفع",
+      "Price Lists": "قوائم الأسعار",
+      "Cost Centers": "مراكز التكلفة",
+      "Users": "المستخدمون",
+      "Roles & Permissions": "الأدوار والصلاحيات",
+      "Audit Logs": "سجلات التدقيق",
+    },
+    ar: {
+      "Dashboard": "لوحة التحكم",
+      "SALES": "المبيعات",
+      "Customers": "العملاء",
+      "All Customers": "جميع العملاء",
+      "Customer Groups": "مجموعات العملاء",
+      "Quotations": "العروض",
+      "Sales Orders": "أوامر البيع",
+      "All Orders": "جميع الأوامر",
+      "Pending": "قيد الانتظار",
+      "Completed": "مكتمل",
+      "Sales Invoices": "فواتير البيع",
+      "Sales Returns": "مرتجعات البيع",
+      "Customer Receipts": "إيصالات العملاء",
+      "Customer Statements": "كشوفات العملاء",
+      "PURCHASES": "المشتريات",
+      "Vendors": "الموردون",
+      "All Vendors": "جميع الموردين",
+      "Vendor Groups": "مجموعات الموردين",
+      "Purchase Orders": "أوامر الشراء",
+      "Purchase Invoices": "فواتير الشراء",
+      "Purchase Returns": "مرتجعات الشراء",
+      "Vendor Payments": "مدفوعات الموردين",
+      "Vendor Statements": "كشوفات الموردين",
+      "INVENTORY": "المخزون",
+      "Products": "المنتجات",
+      "All Products": "جميع المنتجات",
+      "In Stock": "في المخزون",
+      "Low Stock": "مخزون منخفض",
+      "Product Categories": "فئات المنتجات",
+      "Units of Measure": "وحدات القياس",
+      "Warehouses": "المستودعات",
+      "Opening Stock": "المخزون الافتتاحي",
+      "Stock Adjustments": "تعديلات المخزون",
+      "Stock Transfers": "تحويلات المخزون",
+      "Stock Count": "جرد المخزون",
+      "Inventory Valuation": "تقييم المخزون",
+      "Stock Movement Report": "تقرير حركة المخزون",
+      "ACCOUNTING": "المحاسبة",
+      "Chart of Accounts": "دليل الحسابات",
+      "Journal Entries": "قيود اليوميات",
+      "Journal Types": "أنواع اليوميات",
+      "Opening Balances": "الأرصدة الافتتاحية",
+      "Fiscal Years": "السنوات المالية",
+      "Period Closing": "إغلاق الفترة",
+      "Account Statements": "كشوفات الحسابات",
+      "Trial Balance": "ميزان المراجعة",
+      "General Ledger": "الدفتر العام",
+      "Income Statement": "قائمة الدخل",
+      "Balance Sheet": "الميزانية العمومية",
+      "Cash Flow Statement": "قائمة التدفقات النقدية",
+      "TREASURY": "الخزانة",
+      "Cash Accounts": "حسابات النقد",
+      "Bank Accounts": "الحسابات البنكية",
+      "Receipts": "الإيصالات",
+      "Payments": "المدفوعات",
+      "Bank Transfers": "التحويلات البنكية",
+      "Bank Reconciliation": "التسوية البنكية",
+      "REPORTS": "التقارير",
+      "Sales Reports": "تقارير المبيعات",
+      "Purchase Reports": "تقارير المشتريات",
+      "Inventory Reports": "تقارير المخزون",
+      "Financial Reports": "التقارير المالية",
+      "Aging Reports": "تقارير الأعمار",
+      "Tax Reports": "التقارير الضريبية",
+      "SETTINGS": "الإعدادات",
+      "Company Profile": "ملف الشركة",
+      "Branches": "الفروع",
+      "Currencies": "العملات",
+      "Exchange Rates": "أسعار الصرف",
+      "Taxes": "الضرائب",
+      "Numbering Series": "سلاسل الترقيم",
+      "Payment Methods": "طرق الدفع",
+      "Price Lists": "قوائم الأسعار",
+      "Cost Centers": "مراكز التكلفة",
+      "Users": "المستخدمون",
+      "Roles & Permissions": "الأدوار والصلاحيات",
+      "Audit Logs": "سجلات التدقيق",
+    }
+  };
+
+  const getTranslation = (text: string) => {
+    return translations[language]?.[text] || text;
+  };
+
+  // Auto-scroll to active menu item (only on page change, with delay to ensure DOM is ready)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (navContainerRef.current) {
+        const activeItem = navContainerRef.current.querySelector('[data-active="true"]');
+        if (activeItem) {
+          const container = navContainerRef.current;
+          const itemTop = (activeItem as HTMLElement).offsetTop;
+          const itemHeight = (activeItem as HTMLElement).offsetHeight;
+          const containerHeight = container.clientHeight;
+          const scrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
+          
+          container.scrollTo({
+            top: Math.max(0, scrollTop),
+            behavior: 'smooth'
+          });
+        }
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [currentPage]);
 
   // Persist expanded menus to localStorage
   const handleToggleMenu = (menuName: string) => {
@@ -384,7 +574,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       if (item.isHeader) {
         return (
           <div key={item.name} className={`py-3 px-4 ${sidebarOpen || sidebarHovered ? "" : "hidden"}`}>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{item.name}</p>
+            <p className={`text-xs font-bold text-muted-foreground uppercase tracking-wider ${isRTL ? "text-right" : "text-left"}`}>{getTranslation(item.name)}</p>
           </div>
         );
       }
@@ -394,14 +584,14 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
           <>
             <button
               onClick={() => handleToggleMenu(item.name)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-sidebar-accent/50 hover:scale-105 hover:translate-x-1 ${
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-sidebar-accent/50 hover:scale-105 ${isRTL ? "hover:-translate-x-1" : "hover:translate-x-1"} ${
                 expandedMenus.includes(item.name) ? "bg-sidebar-accent/50" : ""
-              } ${level > 0 ? "text-sm" : ""}`}
+              } ${level > 0 ? "text-sm" : ""} ${isRTL ? "flex-row-reverse" : ""}`}
             >
               <span className="text-base">{item.icon}</span>
               {(sidebarOpen || sidebarHovered) && (
                 <>
-                  <span className="flex-1 text-left">{item.name}</span>
+                  <span className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}>{getTranslation(item.name)}</span>
                   <ChevronDown
                     size={16}
                     className={`transition-transform ${expandedMenus.includes(item.name) ? "rotate-180" : ""}`}
@@ -410,7 +600,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
               )}
             </button>
             {expandedMenus.includes(item.name) && (sidebarOpen || sidebarHovered) && (
-              <div className="pl-4 space-y-1 border-l-2 border-sidebar-accent ml-4">
+              <div className={`space-y-1 ${isRTL ? "pr-4 border-r-2 border-sidebar-accent mr-4" : "pl-4 border-l-2 border-sidebar-accent ml-4"}`}>
                 {renderNavItems(item.submenu, level + 1)}
               </div>
             )}
@@ -418,14 +608,15 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
         ) : (
           <Link
             href={item.href || "/"}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 hover:translate-x-1 ${
+            data-active={currentPage === item.name ? "true" : "false"}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 ${isRTL ? "hover:-translate-x-1 flex-row-reverse" : "hover:translate-x-1"} ${
               currentPage === item.name
                 ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                 : "text-sidebar-foreground hover:bg-sidebar-accent/50"
             } ${level > 0 ? "text-sm" : ""}`}
           >
             <span className="text-base">{item.icon}</span>
-            {(sidebarOpen || sidebarHovered) && <span>{item.name}</span>}
+            {(sidebarOpen || sidebarHovered) && <span>{getTranslation(item.name)}</span>}
           </Link>
         )}
       </div>
@@ -516,7 +707,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
         </div>
 
         {/* Menu Items */}
-        <nav className="flex-1 overflow-y-auto space-y-1 px-3 py-4">
+        <nav ref={navContainerRef} className="flex-1 overflow-y-auto space-y-1 px-3 py-4">
           {renderNavItems(navItems)}
         </nav>
 

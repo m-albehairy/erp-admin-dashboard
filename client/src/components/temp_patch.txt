@@ -1,0 +1,22 @@
+After line 40 (after the expandedMenus useState), add:
+  const navContainerRef = useRef<HTMLDivElement>(null);
+
+After line 43 (after isRTL declaration), add:
+  // Auto-scroll to active menu item
+  useEffect(() => {
+    if (navContainerRef.current) {
+      const activeItem = navContainerRef.current.querySelector('[data-active="true"]');
+      if (activeItem) {
+        const container = navContainerRef.current;
+        const itemTop = (activeItem as HTMLElement).offsetTop;
+        const itemHeight = (activeItem as HTMLElement).offsetHeight;
+        const containerHeight = container.clientHeight;
+        const scrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
+        
+        container.scrollTo({
+          top: Math.max(0, scrollTop),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [currentPage, expandedMenus]);
