@@ -152,9 +152,8 @@ export default function CustomerDetails() {
         <Card className="p-4 bg-white shadow-sm border-0">
           <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
             {/* Search Bar */}
-            <div className="relative flex-1 min-w-xs">
-              <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none ${isRTL ? "right-4" : "left-4"}`} />
-              <Input 
+            <div className="flex-1 min-w-xs">
+                            <Input 
                 type="text" 
                 placeholder="Search by name or email..." 
                 className={`${isRTL ? "pr-12 text-right" : "pl-12"} bg-secondary border-0`} 

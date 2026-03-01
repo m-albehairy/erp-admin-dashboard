@@ -606,12 +606,11 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
             href={item.href || "/"}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 ${
               isMenuItemActive(item.href)
-                ? "bg-gray-200 dark:bg-gray-700 font-medium"
+                ? "bg-gray-200 dark:bg-gray-700 font-medium text-primary"
                 : "hover:bg-sidebar-accent/50"
             } ${isRTL ? "hover:-translate-x-1 flex-row-reverse" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""}`}
-            style={isMenuItemActive(item.href) ? { color: themeColorMap[themeColor] || themeColorMap.blue } : {}}
           >
-            <FontAwesomeIcon icon={item.icon} className="w-4 h-4 flex-shrink-0" style={isMenuItemActive(item.href) ? { color: themeColorMap[themeColor] || themeColorMap.blue } : {}} />
+            <FontAwesomeIcon icon={item.icon} className={`w-4 h-4 flex-shrink-0 ${isMenuItemActive(item.href) ? "text-primary" : ""}`} />
             {(sidebarOpen || sidebarHovered) && <span>{getTranslation(item.name)}</span>}
           </Link>
         )}
