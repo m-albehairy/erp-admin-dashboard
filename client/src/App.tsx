@@ -17,6 +17,13 @@ import Showcase from "./pages/Showcase";
 import OrderDetails from "./pages/OrderDetails";
 import CustomerDetails from "./pages/CustomerDetails";
 import Quotations from "./pages/Quotations";
+import AllCustomers from "./pages/AllCustomers";
+import CustomerGroups from "./pages/CustomerGroups";
+import AllOrders from "./pages/AllOrders";
+import PendingOrders from "./pages/PendingOrders";
+import CompletedOrders from "./pages/CompletedOrders";
+import AllVendors from "./pages/AllVendors";
+import VendorGroups from "./pages/VendorGroups";
 import SalesInvoices from "./pages/SalesInvoices";
 import SalesReturns from "./pages/SalesReturns";
 import CustomerReceipts from "./pages/CustomerReceipts";
@@ -104,6 +111,11 @@ function Router() {
       {/* Sales Routes */}
       <Route path={"/order-details"} component={OrderDetails} />
       <Route path={"/customer-details"} component={CustomerDetails} />
+      <Route path={"/all-customers"} component={AllCustomers} />
+      <Route path={"/customer-groups"} component={CustomerGroups} />
+      <Route path={"/all-orders"} component={AllOrders} />
+      <Route path={"/pending-orders"} component={PendingOrders} />
+      <Route path={"/completed-orders"} component={CompletedOrders} />
       <Route path={"/quotations"} component={Quotations} />
       <Route path={"/sales-invoices"} component={SalesInvoices} />
       <Route path={"/sales-returns"} component={SalesReturns} />
@@ -112,6 +124,8 @@ function Router() {
 
       {/* Purchase Routes */}
       <Route path={"/vendors"} component={Vendors} />
+      <Route path={"/all-vendors"} component={AllVendors} />
+      <Route path={"/vendor-groups"} component={VendorGroups} />
       <Route path={"/purchase-orders"} component={PurchaseOrders} />
       <Route path={"/purchase-invoices"} component={PurchaseInvoices} />
       <Route path={"/purchase-returns"} component={PurchaseReturns} />

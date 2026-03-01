@@ -243,8 +243,8 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       name: "Customers",
       icon: "👥",
       submenu: [
-        { name: "All Customers", icon: faUsers, href: "/customer-details" },
-        { name: "Customer Groups", icon: faUsers, href: "/customer-details" },
+        { name: "All Customers", icon: faUsers, href: "/all-customers" },
+        { name: "Customer Groups", icon: faUsers, href: "/customer-groups" },
       ],
     },
     {
@@ -256,9 +256,9 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       name: "Sales Orders",
       icon: "🛒",
       submenu: [
-        { name: "All Orders", icon: faClipboardList, href: "/order-details" },
-        { name: "Pending", icon: faClock, href: "/order-details" },
-        { name: "Completed", icon: faCheckDouble, href: "/order-details" },
+        { name: "All Orders", icon: faClipboardList, href: "/all-orders" },
+        { name: "Pending", icon: faClock, href: "/pending-orders" },
+        { name: "Completed", icon: faCheckDouble, href: "/completed-orders" },
       ],
     },
     {
@@ -286,8 +286,8 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       name: "Vendors",
       icon: "🏪",
       submenu: [
-        { name: "All Vendors", icon: faStore, href: "/vendors" },
-        { name: "Vendor Groups", icon: faBuilding, href: "/vendors" },
+        { name: "All Vendors", icon: faStore, href: "/all-vendors" },
+        { name: "Vendor Groups", icon: faBuilding, href: "/vendor-groups" },
       ],
     },
     {
