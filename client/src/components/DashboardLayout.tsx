@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useThemeColor } from "@/contexts/ThemeColorContext";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -44,6 +45,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
   });
   const navContainerRef = useRef<HTMLDivElement>(null);
   const { theme, language, financialYear, toggleTheme, setLanguage, setFinancialYear } = useSettings();
+  const { themeColor } = useThemeColor();
 
   const isRTL = language === "ar";
 
@@ -607,9 +609,9 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                 ? "bg-gray-200 dark:bg-gray-700 font-medium"
                 : "hover:bg-sidebar-accent/50"
             } ${isRTL ? "hover:-translate-x-1 flex-row-reverse" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""}`}
-            style={isMenuItemActive(item.href) ? { color: colorMap[theme] || colorMap.blue } : {}}
+            style={isMenuItemActive(item.href) ? { color: themeColorMap[themeColor] || themeColorMap.blue } : {}}
           >
-            <FontAwesomeIcon icon={item.icon} className="w-4 h-4 flex-shrink-0" style={isMenuItemActive(item.href) ? { color: colorMap[theme] || colorMap.blue } : {}} />
+            <FontAwesomeIcon icon={item.icon} className="w-4 h-4 flex-shrink-0" style={isMenuItemActive(item.href) ? { color: themeColorMap[themeColor] || themeColorMap.blue } : {}} />
             {(sidebarOpen || sidebarHovered) && <span>{getTranslation(item.name)}</span>}
           </Link>
         )}
@@ -640,6 +642,15 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
     navy: "#09122C",
     darkpurple: "#2E073F",
     darkslate: "#17153B",
+  };
+
+  const themeColorMap: { [key: string]: string } = {
+    red: "#EF4444",
+    blue: "#3B82F6",
+    green: "#10B981",
+    purple: "#A855F7",
+    orange: "#F97316",
+    pink: "#EC4899",
   };
 
   const colors = [

@@ -154,7 +154,7 @@ export default function OrderDetails() {
               <Input 
                 type="text" 
                 placeholder="Search by order number or customer..." 
-                className={`${isRTL ? "pr-10 pl-4 text-right" : "pl-10 pr-4"} bg-secondary border-0 h-10`} 
+                className={`${isRTL ? "pr-10 pl-4 text-right" : "pl-10 pr-4"} bg-secondary border-0 h-10 focus:outline-none focus:ring-0`} 
               />
             </div>
 
