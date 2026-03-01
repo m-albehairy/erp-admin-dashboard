@@ -580,9 +580,10 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
           <>
             <button
               onClick={() => handleToggleMenu(item.name)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 text-sidebar-foreground hover:bg-sidebar-accent/50 ${isRTL ? "hover:-translate-x-1" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""} ${isRTL ? "flex-row-reverse" : ""}`}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-sidebar-accent/50 ${isRTL ? "hover:-translate-x-1" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""} ${isRTL ? "flex-row-reverse" : ""}`}
+              style={{ color: colorMap[theme] || colorMap.blue }}
             >
-              <FontAwesomeIcon icon={item.icon} className="w-4 h-4 flex-shrink-0" />
+              <FontAwesomeIcon icon={item.icon} className="w-4 h-4 flex-shrink-0" style={{ color: colorMap[theme] || colorMap.blue }} />
               {(sidebarOpen || sidebarHovered) && (
                 <>
                   <span className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}>{getTranslation(item.name)}</span>
@@ -605,11 +606,11 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 ${
               isMenuItemActive(item.href)
                 ? "bg-gray-200 dark:bg-gray-700 font-medium"
-                : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                : "hover:bg-sidebar-accent/50"
             } ${isRTL ? "hover:-translate-x-1 flex-row-reverse" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""}`}
-            style={isMenuItemActive(item.href) ? { color: colorMap[theme] || colorMap.blue } : {}}
+            style={{ color: colorMap[theme] || colorMap.blue }}
           >
-            <FontAwesomeIcon icon={item.icon} className="w-4 h-4 flex-shrink-0" style={isMenuItemActive(item.href) ? { color: colorMap[theme] || colorMap.blue } : {}} />
+            <FontAwesomeIcon icon={item.icon} className="w-4 h-4 flex-shrink-0" style={{ color: colorMap[theme] || colorMap.blue }} />
             {(sidebarOpen || sidebarHovered) && <span>{getTranslation(item.name)}</span>}
           </Link>
         )}
