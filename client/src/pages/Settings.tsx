@@ -11,9 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useThemeColor } from "@/contexts/ThemeColorContext";
 
 export default function Settings() {
   const { language, theme, toggleTheme, setLanguage } = useSettings();
+  const { themeColor, setThemeColor } = useThemeColor();
   const isRTL = language === "ar";
   const [activeTab, setActiveTab] = useState("general");
   const [formData, setFormData] = useState({
@@ -367,14 +369,17 @@ export default function Settings() {
                     </label>
                     <div className={`flex gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
                       {[
-                        { name: "Blue", color: "bg-blue-500" },
-                        { name: "Green", color: "bg-green-500" },
-                        { name: "Purple", color: "bg-purple-500" },
-                        { name: "Red", color: "bg-red-500" },
+                        { name: "Blue", value: "blue", color: "bg-blue-500" },
+                        { name: "Green", value: "green", color: "bg-green-500" },
+                        { name: "Purple", value: "purple", color: "bg-purple-500" },
+                        { name: "Red", value: "red", color: "bg-red-500" },
+                        { name: "Orange", value: "orange", color: "bg-orange-500" },
+                        { name: "Pink", value: "pink", color: "bg-pink-500" },
                       ].map((scheme) => (
                         <button
                           key={scheme.name}
-                          className={`w-12 h-12 rounded-lg ${scheme.color} border-2 border-border hover:border-foreground transition-all`}
+                          onClick={() => setThemeColor(scheme.value as any)}
+                          className={`w-12 h-12 rounded-lg ${scheme.color} border-4 transition-all ${themeColor === scheme.value ? "border-foreground" : "border-border hover:border-foreground"}`}
                           title={scheme.name}
                         />
                       ))}
