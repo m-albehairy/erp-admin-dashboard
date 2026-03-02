@@ -369,23 +369,28 @@ export default function Settings() {
                     <label className={`block text-sm font-medium text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
                       {language === "ar" ? "مواضيع النسق" : "Theme Presets"}
                     </label>
-                    <div className={`grid grid-cols-2 md:grid-cols-5 gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+                    <div className={`grid grid-cols-2 md:grid-cols-5 gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
                       {presets.map((preset) => (
                         <button
                           key={preset.id}
                           onClick={() => setPreset(preset.id)}
                           className={`p-4 rounded-lg border-2 transition-all text-center ${
                             currentPreset.id === preset.id
-                              ? "border-foreground bg-primary/10"
+                              ? "border-foreground ring-2 ring-primary"
                               : "border-border hover:border-foreground"
                           }`}
                         >
-                          <div className="flex gap-1 mb-2 justify-center">
-                            <div className="w-3 h-3 rounded" style={{ backgroundColor: preset.light.primary }} />
-                            <div className="w-3 h-3 rounded" style={{ backgroundColor: preset.light.accent }} />
-                            <div className="w-3 h-3 rounded" style={{ backgroundColor: preset.light.secondary }} />
+                          {/* Color swatches */}
+                          <div className="grid grid-cols-3 gap-1 mb-3">
+                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.primary }} title="Primary" />
+                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.secondary }} title="Secondary" />
+                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.accent }} title="Accent" />
+                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.success }} title="Success" />
+                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.warning }} title="Warning" />
+                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.error }} title="Error" />
                           </div>
                           <p className="text-xs font-medium text-foreground">{preset.label}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{preset.name}</p>
                         </button>
                       ))}
                     </div>
