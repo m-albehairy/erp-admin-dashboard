@@ -13,6 +13,8 @@ import {
 import { useSettings } from "@/contexts/SettingsContext";
 import { useThemeColor } from "@/contexts/ThemeColorContext";
 import { useThemePreset } from "@/contexts/ThemePresetContext";
+import { useThemeSystem } from "@/contexts/ThemeSystemContext";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 export default function Settings() {
   const { language, theme, toggleTheme, setLanguage } = useSettings();
@@ -332,75 +334,7 @@ export default function Settings() {
                 <h3 className={`font-display font-bold text-lg text-foreground mb-6 ${isRTL ? "text-right" : ""}`}>
                   Appearance Settings
                 </h3>
-                <div className="space-y-6">
-                  {/* Theme */}
-                  <div>
-                    <label className={`block text-sm font-medium text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
-                      Theme
-                    </label>
-                    <div className={`flex gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-                      <button
-                        onClick={() => theme === "dark" && toggleTheme()}
-                        className={`flex-1 p-4 border-2 rounded-lg transition-all ${
-                          theme === "light"
-                            ? "border-primary bg-secondary"
-                            : "border-border hover:border-primary"
-                        }`}
-                      >
-                        <Sun size={24} className="mx-auto mb-2" />
-                        <p className="text-sm font-medium">Light</p>
-                      </button>
-                      <button
-                        onClick={() => toggleTheme()}
-                        className={`flex-1 p-4 border-2 rounded-lg transition-all ${
-                          theme === "dark"
-                            ? "border-primary bg-secondary"
-                            : "border-border hover:border-primary"
-                        }`}
-                      >
-                        <Moon size={24} className="mx-auto mb-2" />
-                        <p className="text-sm font-medium">Dark</p>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Theme Presets */}
-                  <div>
-                    <label className={`block text-sm font-medium text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
-                      {language === "ar" ? "مواضيع النسق" : "Theme Presets"}
-                    </label>
-                    <div className={`grid grid-cols-2 md:grid-cols-5 gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-                      {presets.map((preset) => (
-                        <button
-                          key={preset.id}
-                          onClick={() => setPreset(preset.id)}
-                          className={`p-4 rounded-lg border-2 transition-all text-center ${
-                            currentPreset.id === preset.id
-                              ? "border-foreground ring-2 ring-primary"
-                              : "border-border hover:border-foreground"
-                          }`}
-                        >
-                          {/* Color swatches */}
-                          <div className="grid grid-cols-3 gap-1 mb-3">
-                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.primary }} title="Primary" />
-                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.secondary }} title="Secondary" />
-                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.accent }} title="Accent" />
-                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.success }} title="Success" />
-                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.warning }} title="Warning" />
-                            <div className="h-6 rounded" style={{ backgroundColor: preset.light.error }} title="Error" />
-                          </div>
-                          <p className="text-xs font-medium text-foreground">{preset.label}</p>
-                          <p className="text-xs text-muted-foreground mt-1">{preset.name}</p>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <Button className="bg-primary hover:bg-blue-700 text-white w-full">
-                    <Save size={16} className="mr-2" />
-                    Save Appearance
-                  </Button>
-                </div>
+                <ThemeSwitcher />
               </Card>
             )}
 

@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { ThemeColorProvider } from "./contexts/ThemeColorContext";
 import { ThemePresetProvider } from "./contexts/ThemePresetContext";
+import { ThemeSystemProvider } from "./contexts/ThemeSystemContext";
 
 // Main Pages
 import Dashboard from "./pages/Dashboard";
@@ -211,21 +212,23 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemePresetProvider>
-        <ThemeProvider
-          defaultTheme="light"
-          // switchable
-        >
-          <SettingsProvider>
-            <ThemeColorProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Router />
-              </TooltipProvider>
-            </ThemeColorProvider>
-          </SettingsProvider>
-        </ThemeProvider>
-      </ThemePresetProvider>
+      <ThemeSystemProvider>
+        <ThemePresetProvider>
+          <ThemeProvider
+            defaultTheme="light"
+            // switchable
+          >
+            <SettingsProvider>
+              <ThemeColorProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Router />
+                </TooltipProvider>
+              </ThemeColorProvider>
+            </SettingsProvider>
+          </ThemeProvider>
+        </ThemePresetProvider>
+      </ThemeSystemProvider>
     </ErrorBoundary>
   );
 }
