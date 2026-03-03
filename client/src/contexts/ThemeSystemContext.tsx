@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 export type ThemeMode = "light" | "dark";
-export type ThemeName = "emerald" | "ocean" | "violet" | "crimson" | "amber" | "arctic" | "zinc" | "linkguard";
+export type ThemeName = "emerald" | "ocean" | "violet" | "crimson" | "amber" | "arctic" | "zinc" | "linkguard" | "default";
 
 export interface ThemeColors {
   background: string;
@@ -197,6 +197,28 @@ const THEMES: Record<ThemeName, Theme> = {
       sidebar: "#161919",
     },
   },
+  default: {
+    id: "default",
+    name: "Default (Original)",
+    light: {
+      background: "#F8FAFC",
+      surface: "#FFFFFF",
+      border: "#E9EDF4",
+      accent: "#10B981",
+      textPrimary: "#202C4B",
+      textSecondary: "#6B7280",
+      sidebar: "#FFFFFF",
+    },
+    dark: {
+      background: "#0F172A",
+      surface: "#1E293B",
+      border: "#334155",
+      accent: "#3B82F6",
+      textPrimary: "#F1F5F9",
+      textSecondary: "#CBD5E1",
+      sidebar: "#0F172A",
+    },
+  },
 };
 
 interface ThemeSystemContextType {
@@ -212,7 +234,7 @@ interface ThemeSystemContextType {
 const ThemeSystemContext = createContext<ThemeSystemContextType | undefined>(undefined);
 
 export function ThemeSystemProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeName>("emerald");
+  const [theme, setThemeState] = useState<ThemeName>("default");
   const [mode, setModeState] = useState<ThemeMode>("light");
 
   // Load from localStorage on mount
