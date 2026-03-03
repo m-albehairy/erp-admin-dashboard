@@ -3,7 +3,7 @@ import { useThemeSystem, type ThemeName, type ThemeMode } from "../contexts/Them
 import { Moon, Sun } from "lucide-react";
 
 export function ThemeSwitcher() {
-  const { theme, mode, setTheme, toggleMode, themes, currentColors } = useThemeSystem();
+  const { theme, mode, setTheme, setMode, toggleMode, themes, currentColors } = useThemeSystem();
 
   return (
     <div className="space-y-6">
@@ -14,9 +14,7 @@ export function ThemeSwitcher() {
         </label>
         <div className="flex gap-3">
           <button
-            onClick={() => {
-              // Light mode
-            }}
+            onClick={() => setMode("light")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
               mode === "light"
                 ? "border-current bg-opacity-10"
@@ -32,9 +30,7 @@ export function ThemeSwitcher() {
             <span>Light</span>
           </button>
           <button
-            onClick={() => {
-              // Dark mode
-            }}
+            onClick={() => setMode("dark")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
               mode === "dark"
                 ? "border-current bg-opacity-10"
