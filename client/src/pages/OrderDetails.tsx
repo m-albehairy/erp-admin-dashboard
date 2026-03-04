@@ -241,7 +241,7 @@ export default function OrderDetails() {
           <Card className="bg-white shadow-sm border-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-secondary border-b border-border">
+                <thead className="border-b border-border">
                   <tr>
                     <th className="px-6 py-3 text-center text-xs font-semibold text-foreground">
                       <input

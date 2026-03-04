@@ -97,7 +97,7 @@ export default function Invoice() {
           <div className="mb-12">
             <table className="w-full">
               <thead>
-                <tr className="bg-secondary border-b-2 border-border">
+                <tr className="border-b-2 border-border">
                   <th className={`px-4 py-3 text-left text-sm font-semibold text-foreground ${isRTL ? "text-right" : ""}`}>Description</th>
                   <th className={`px-4 py-3 text-center text-sm font-semibold text-foreground`}>Quantity</th>
                   <th className={`px-4 py-3 text-right text-sm font-semibold text-foreground ${isRTL ? "text-left" : ""}`}>Unit Price</th>

@@ -245,7 +245,7 @@ export default function CustomerDetails() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-border bg-secondary/50">
+                  <tr className="border-b border-border">
                     <th className="px-6 py-4 text-sm font-semibold text-foreground text-center">
                       <input
                         type="checkbox"
