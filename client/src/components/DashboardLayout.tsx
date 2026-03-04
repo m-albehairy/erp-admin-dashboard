@@ -735,11 +735,10 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                 {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
               <div className="relative hidden sm:block">
-                <Search size={18} className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground ${isRTL ? "right-3" : "left-3"}`} />
                 <Input
                   type="text"
                   placeholder="Search..."
-                  className={`${isRTL ? "pr-10 text-right" : "pl-10"} bg-secondary border-0 rounded-lg focus:ring-2 focus:ring-primary w-64`}
+                  className={`${isRTL ? "pr-4 text-right" : "pl-4"} bg-secondary border-0 rounded-lg focus:ring-2 focus:ring-primary w-64`}
                 />
               </div>
             </div>
