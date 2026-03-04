@@ -872,7 +872,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
         </nav>
 
         {/* Breadcrumb and Page Title */}
-        <div className={`px-6 py-4 border-b border-border bg-secondary/50 ${isRTL ? "text-right" : ""}`}>
+        <div className={`px-6 py-4 border-b border-border ${isRTL ? "text-right" : ""}`}>
           <Breadcrumb items={breadcrumbs || [{ label: currentPage }]} />
         </div>
 
