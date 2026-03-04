@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 export type ThemeMode = "light" | "dark";
-export type ThemeName = "emerald" | "ocean" | "violet" | "crimson" | "amber" | "arctic" | "zinc" | "linkguard" | "default";
+export type ThemeName = "emerald" | "ocean" | "violet" | "crimson" | "amber" | "arctic" | "zinc" | "linkguard" | "default" | "midnight" | "obsidian";
 
 export interface ThemeColors {
   background: string;
@@ -217,6 +217,50 @@ const THEMES: Record<ThemeName, Theme> = {
       textPrimary: "#E8EAED",
       textSecondary: "#B0B5C0",
       sidebar: "#0d1420",
+    },
+  },
+  midnight: {
+    id: "midnight",
+    name: "Midnight Purple",
+    light: {
+      background: "#F3F0FF",
+      surface: "#FFFFFF",
+      border: "#E9D5FF",
+      accent: "#7C3AED",
+      textPrimary: "#1E1B4B",
+      textSecondary: "#6B7280",
+      sidebar: "#F5F3FF",
+    },
+    dark: {
+      background: "#0D0612",
+      surface: "#1a1428",
+      border: "#3d2d5f",
+      accent: "#A78BFA",
+      textPrimary: "#F3E8FF",
+      textSecondary: "#D8B4FE",
+      sidebar: "#0a0410",
+    },
+  },
+  obsidian: {
+    id: "obsidian",
+    name: "Obsidian Black",
+    light: {
+      background: "#F5F5F5",
+      surface: "#FFFFFF",
+      border: "#E5E5E5",
+      accent: "#EC4899",
+      textPrimary: "#1F2937",
+      textSecondary: "#6B7280",
+      sidebar: "#F9FAFB",
+    },
+    dark: {
+      background: "#0A0A0A",
+      surface: "#1A1A1A",
+      border: "#2D2D2D",
+      accent: "#EC4899",
+      textPrimary: "#F5F5F5",
+      textSecondary: "#D1D5DB",
+      sidebar: "#050505",
     },
   },
 };
