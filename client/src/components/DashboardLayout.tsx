@@ -46,13 +46,41 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
   const navContainerRef = useRef<HTMLDivElement>(null);
   const { theme, language, financialYear, toggleTheme, setLanguage, setFinancialYear } = useSettings();
   const { themeColor } = useThemeColor();
+  const activeItemRef = useRef<HTMLDivElement>(null);
 
   const isRTL = language === "ar";
+
+  // Scroll to active menu item when location changes
+  useEffect(() => {
+    if (activeItemRef.current && navContainerRef.current) {
+      const container = navContainerRef.current;
+      const activeItem = activeItemRef.current;
+      const containerRect = container.getBoundingClientRect();
+      const itemRect = activeItem.getBoundingClientRect();
+
+      // Check if item is visible in the container
+      const isVisible = itemRect.top >= containerRect.top && itemRect.bottom <= containerRect.bottom;
+
+      if (!isVisible) {
+        // Scroll the item to the middle of the container
+        const scrollTop = activeItem.offsetTop - container.clientHeight / 2 + activeItem.clientHeight / 2;
+        container.scrollTop = Math.max(0, scrollTop);
+      }
+    }
+  }, [currentPath]);
 
   // Function to check if a menu item is active based on current route
   const isMenuItemActive = (href?: string): boolean => {
     if (!href) return false;
     return currentPath === href;
+  };
+
+  // Get ref for active menu item
+  const getActiveItemRef = (href?: string) => {
+    if (isMenuItemActive(href)) {
+      return activeItemRef;
+    }
+    return undefined;
   };
 
   // Function to check if a menu group is active (any submenu item is active)
@@ -577,45 +605,47 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       }
       
       return (
-      <div key={item.name}>
-        {item.submenu ? (
-          <>
-            <button
-              onClick={() => handleToggleMenu(item.name)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-sidebar-accent/50 ${isRTL ? "hover:-translate-x-1" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""} ${isRTL ? "flex-row-reverse" : ""}`}
-            >
-              <FontAwesomeIcon icon={item.icon} className="w-4 h-4 flex-shrink-0" />
-              {(sidebarOpen || sidebarHovered) && (
-                <>
-                  <span className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}>{getTranslation(item.name)}</span>
-                  <ChevronDown
-                    size={16}
-                    className={`transition-transform ${expandedMenus.includes(item.name) ? "rotate-180" : ""}`}
-                  />
-                </>
+        <div key={item.name}>
+          {item.submenu ? (
+            <>
+              <button
+                onClick={() => handleToggleMenu(item.name)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-sidebar-accent/50 ${isRTL ? "hover:-translate-x-1" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""} ${isRTL ? "flex-row-reverse" : ""}`}
+              >
+                <FontAwesomeIcon icon={item.icon} className="w-4 h-4 flex-shrink-0" />
+                {(sidebarOpen || sidebarHovered) && (
+                  <>
+                    <span className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}>{getTranslation(item.name)}</span>
+                    <ChevronDown
+                      size={16}
+                      className={`transition-transform ${expandedMenus.includes(item.name) ? "rotate-180" : ""}`}
+                    />
+                  </>
+                )}
+              </button>
+              {expandedMenus.includes(item.name) && (sidebarOpen || sidebarHovered) && (
+                <div className={`space-y-1 ${isRTL ? "pr-4 border-r-2 border-sidebar-accent mr-4" : "pl-4 border-l-2 border-sidebar-accent ml-4"}`}>
+                  {renderNavItems(item.submenu, level + 1)}
+                </div>
               )}
-            </button>
-            {expandedMenus.includes(item.name) && (sidebarOpen || sidebarHovered) && (
-              <div className={`space-y-1 ${isRTL ? "pr-4 border-r-2 border-sidebar-accent mr-4" : "pl-4 border-l-2 border-sidebar-accent ml-4"}`}>
-                {renderNavItems(item.submenu, level + 1)}
-              </div>
-            )}
-          </>
-        ) : (
-          <Link
-            href={item.href || "/"}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 ${
-              isMenuItemActive(item.href)
-                ? "bg-gray-200 dark:bg-gray-700 font-medium text-primary"
-                : "hover:bg-sidebar-accent/50"
-            } ${isRTL ? "hover:-translate-x-1 flex-row-reverse" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""}`}
-          >
-            <FontAwesomeIcon icon={item.icon} className={`w-4 h-4 flex-shrink-0 ${isMenuItemActive(item.href) ? "text-primary" : ""}`} />
-            {(sidebarOpen || sidebarHovered) && <span>{getTranslation(item.name)}</span>}
-          </Link>
-        )}
-      </div>
-    );
+            </>
+          ) : (
+            <div ref={isMenuItemActive(item.href) ? activeItemRef : undefined}>
+              <Link
+                href={item.href || "/"}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 ${
+                  isMenuItemActive(item.href)
+                    ? "bg-gray-200 dark:bg-gray-700 font-medium text-primary"
+                    : "hover:bg-sidebar-accent/50"
+                } ${isRTL ? "hover:-translate-x-1 flex-row-reverse" : "hover:translate-x-1"} ${level > 0 ? "text-sm" : ""}`}
+              >
+                <FontAwesomeIcon icon={item.icon} className={`w-4 h-4 flex-shrink-0 ${isMenuItemActive(item.href) ? "text-primary" : ""}`} />
+                {(sidebarOpen || sidebarHovered) && <span>{getTranslation(item.name)}</span>}
+              </Link>
+            </div>
+          )}
+        </div>
+      );
     });
   };
 
