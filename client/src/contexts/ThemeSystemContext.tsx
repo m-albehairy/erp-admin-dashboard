@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 export type ThemeMode = "light" | "dark";
-export type ThemeName = "emerald" | "ocean" | "violet" | "crimson" | "amber" | "arctic" | "zinc" | "linkguard" | "default" | "midnight" | "obsidian";
+export type ThemeName = "emerald" | "ocean" | "violet" | "crimson" | "amber" | "arctic" | "zinc" | "linkguard" | "default" | "midnight" | "obsidian" | "darkgreen";
 
 export interface ThemeColors {
   background: string;
@@ -261,6 +261,28 @@ const THEMES: Record<ThemeName, Theme> = {
       textPrimary: "#F5F5F5",
       textSecondary: "#D1D5DB",
       sidebar: "#050505",
+    },
+  },
+  darkgreen: {
+    id: "darkgreen",
+    name: "Dark Green",
+    light: {
+      background: "#F0FDF4",
+      surface: "#FFFFFF",
+      border: "#BBFBEE",
+      accent: "#00c46a",
+      textPrimary: "#0F2F1F",
+      textSecondary: "#4B5563",
+      sidebar: "#ECFDF5",
+    },
+    dark: {
+      background: "#4a6741",
+      surface: "#1e1e1e",
+      border: "#2a2a2a",
+      accent: "#00c46a",
+      textPrimary: "#ffffff",
+      textSecondary: "#cccccc",
+      sidebar: "#1a1a1a",
     },
   },
 };
