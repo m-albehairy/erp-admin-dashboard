@@ -22,7 +22,7 @@ export default function BulkActions({
   isAllSelected,
 }: BulkActionsProps) {
   return (
-    <div className="flex items-center gap-4 p-4 bg-white rounded-lg border border-E9EDF4 shadow-sm">
+    <div className="flex items-center gap-4 p-4 dark:bg-card bg-card rounded-lg border border-E9EDF4 shadow-sm">
       <Checkbox
         checked={isAllSelected}
         onCheckedChange={(checked) => onSelectAll(checked as boolean)}

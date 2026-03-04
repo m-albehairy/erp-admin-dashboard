@@ -39,7 +39,7 @@ function getStatusColor(status: string) {
     case "out-of-stock":
       return "bg-red-50 text-destructive";
     default:
-      return "bg-gray-50 text-gray-600";
+      return "dark:bg-secondary bg-secondary text-gray-600";
   }
 }
 
@@ -114,17 +114,17 @@ export default function Inventory() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Total Products</p>
             <h3 className="text-2xl font-bold text-foreground mt-2">856</h3>
             <p className="text-xs text-muted-foreground mt-2">Active in inventory</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Low Stock Items</p>
             <h3 className="text-2xl font-bold text-orange-600 mt-2">23</h3>
             <p className="text-xs text-muted-foreground mt-2">Need reordering soon</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Out of Stock</p>
             <h3 className="text-2xl font-bold text-destructive mt-2">12</h3>
             <p className="text-xs text-muted-foreground mt-2">Urgent action required</p>
@@ -157,7 +157,7 @@ export default function Inventory() {
         )}
 
         {/* Search and Advanced Controls - Single Row */}
-        <Card className="p-4 bg-white shadow-sm border-0">
+        <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
           <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
             {/* Search Bar */}
             <div className="flex-1 min-w-xs">
@@ -289,7 +289,7 @@ export default function Inventory() {
 
         {/* Table View */}
         {viewMode === "table" && (
-          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+          <Card className="dark:bg-card bg-card shadow-sm border-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -427,7 +427,7 @@ export default function Inventory() {
         {viewMode === "grid" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedData.map((item) => (
-              <Card key={item.id} className={`p-6 bg-white shadow-sm border-0 hover:shadow-md transition-shadow ${isRTL ? "text-right" : ""}`}>
+              <Card key={item.id} className={`p-6 dark:bg-card bg-card shadow-sm border-0 hover:shadow-md transition-shadow ${isRTL ? "text-right" : ""}`}>
                 <div className={`flex justify-between items-start mb-4 ${isRTL ? "flex-row-reverse" : ""}`}>
                   <div>
                     <h3 className="font-display font-bold text-lg text-foreground">{item.name}</h3>

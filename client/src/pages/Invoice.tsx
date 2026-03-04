@@ -57,7 +57,7 @@ export default function Invoice() {
         </div>
 
         {/* Invoice Document */}
-        <Card className="bg-white shadow-sm border-0 p-12">
+        <Card className="dark:bg-card bg-card shadow-sm border-0 p-12">
           {/* Header Section */}
           <div className={`flex justify-between items-start mb-12 pb-8 border-b-2 border-border ${isRTL ? "flex-row-reverse" : ""}`}>
             <div className={isRTL ? "text-right" : ""}>

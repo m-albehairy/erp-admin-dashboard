@@ -280,7 +280,7 @@ const THEMES: Record<ThemeName, Theme> = {
       surface: "#1e1e1e",
       border: "#2a2a2a",
       accent: "#00c46a",
-      textPrimary: "#ffffff",
+      textPrimary: "#cccccc",
       textSecondary: "#cccccc",
       sidebar: "#1a1a1a",
     },

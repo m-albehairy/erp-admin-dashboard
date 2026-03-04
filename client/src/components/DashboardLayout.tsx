@@ -757,7 +757,7 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Navbar */}
-        <nav className="bg-white border-b border-border shadow-sm">
+        <nav className="bg-sidebar dark:bg-sidebar border-b border-border shadow-sm">
           <div className={`flex items-center justify-between px-6 py-4 ${isRTL ? "flex-row-reverse" : ""}`}>
             {/* Left Section */}
             <div className={`flex items-center gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
@@ -845,9 +845,9 @@ export default function DashboardLayout({ children, currentPage = "Dashboard", b
                         onClick={() => {
                           const root = document.documentElement;
                           root.style.setProperty("--primary", colorMap[color.value]);
-                          root.style.setProperty("--primary-foreground", "#fff");
+                          root.style.setProperty("--primary-foreground", "#cccccc");
                           root.style.setProperty("--sidebar-primary", colorMap[color.value]);
-                          root.style.setProperty("--sidebar-primary-foreground", "#fff");
+                          root.style.setProperty("--sidebar-primary-foreground", "#cccccc");
                           root.style.setProperty("--chart-1", colorMap[color.value] + "4D");
                           root.style.setProperty("--chart-2", colorMap[color.value] + "80");
                           root.style.setProperty("--chart-3", colorMap[color.value] + "B3");

@@ -61,22 +61,22 @@ export default function Analytics() {
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Revenue</p>
             <h3 className="text-2xl font-bold text-foreground mt-2">$485,230</h3>
             <p className="text-xs text-accent mt-2">↑ 18.5% vs last period</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Avg Order Value</p>
             <h3 className="text-2xl font-bold text-foreground mt-2">$385</h3>
             <p className="text-xs text-accent mt-2">↑ 5.2% vs last period</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Conversion Rate</p>
             <h3 className="text-2xl font-bold text-foreground mt-2">3.24%</h3>
             <p className="text-xs text-orange-600 mt-2">↓ 0.8% vs last period</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Customer LTV</p>
             <h3 className="text-2xl font-bold text-foreground mt-2">$2,840</h3>
             <p className="text-xs text-accent mt-2">↑ 12.3% vs last period</p>
@@ -84,7 +84,7 @@ export default function Analytics() {
         </div>
 
         {/* Revenue and Orders Trend */}
-        <Card className="p-6 bg-white shadow-sm border-0">
+        <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
           <div className="mb-6">
             <h3 className="font-display font-bold text-lg text-foreground">Revenue & Orders Trend</h3>
             <p className="text-sm text-muted-foreground mt-1">Monthly performance overview</p>
@@ -117,7 +117,7 @@ export default function Analytics() {
         {/* Sales by Category and Customer Metrics */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Sales by Category */}
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             <div className="mb-6">
               <h3 className="font-display font-bold text-lg text-foreground">Sales by Category</h3>
               <p className="text-sm text-muted-foreground mt-1">Performance by product category</p>
@@ -140,7 +140,7 @@ export default function Analytics() {
           </Card>
 
           {/* Customer Acquisition & Retention */}
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             <div className="mb-6">
               <h3 className="font-display font-bold text-lg text-foreground">Customer Metrics</h3>
               <p className="text-sm text-muted-foreground mt-1">New customers and retention rate</p>
@@ -166,7 +166,7 @@ export default function Analytics() {
         </div>
 
         {/* Top Insights */}
-        <Card className="p-6 bg-white shadow-sm border-0">
+        <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
           <h3 className="font-display font-bold text-lg text-foreground mb-4">Key Insights</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">

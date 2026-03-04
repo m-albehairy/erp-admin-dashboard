@@ -30,9 +30,9 @@ function getStatusColor(status: string) {
     case "on-leave":
       return "bg-orange-50 text-orange-600";
     case "inactive":
-      return "bg-gray-50 text-gray-600";
+      return "dark:bg-secondary bg-secondary text-gray-600";
     default:
-      return "bg-gray-50 text-gray-600";
+      return "dark:bg-secondary bg-secondary text-gray-600";
   }
 }
 
@@ -92,22 +92,22 @@ export default function EmployeeManagement() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Total Employees</p>
             <h3 className="text-2xl font-bold text-foreground mt-2">245</h3>
             <p className="text-xs text-muted-foreground mt-2">Active staff</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">On Leave</p>
             <h3 className="text-2xl font-bold text-orange-600 mt-2">12</h3>
             <p className="text-xs text-muted-foreground mt-2">Currently away</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">New This Month</p>
             <h3 className="text-2xl font-bold text-green-600 mt-2">8</h3>
             <p className="text-xs text-muted-foreground mt-2">Recent hires</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Departments</p>
             <h3 className="text-2xl font-bold text-primary mt-2">12</h3>
             <p className="text-xs text-muted-foreground mt-2">Across company</p>
@@ -140,7 +140,7 @@ export default function EmployeeManagement() {
         )}
 
         {/* Search and Advanced Controls - Single Row */}
-        <Card className="p-4 bg-white shadow-sm border-0">
+        <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
           <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
             {/* Search Bar */}
             <div className="flex-1 min-w-xs">
@@ -232,7 +232,7 @@ export default function EmployeeManagement() {
 
         {/* Table View */}
         {viewMode === "table" && (
-          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+          <Card className="dark:bg-card bg-card shadow-sm border-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -349,7 +349,7 @@ export default function EmployeeManagement() {
                   setPageSize(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="px-3 py-2 border border-border rounded-lg text-sm bg-white text-foreground"
+                className="px-3 py-2 border border-border rounded-lg text-sm dark:bg-card bg-card text-foreground"
               >
                 <option value={5}>5 per page</option>
                 <option value={10}>10 per page</option>
@@ -364,7 +364,7 @@ export default function EmployeeManagement() {
         {viewMode === "grid" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {paginatedData.map((item) => (
-              <Card key={item.id} className="p-4 bg-white shadow-sm border-0">
+              <Card key={item.id} className="p-4 dark:bg-card bg-card shadow-sm border-0">
                 <div className={`flex items-start justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
                   <div className={isRTL ? "text-right" : ""}>
                     <h3 className="font-semibold text-foreground">{item.name}</h3>

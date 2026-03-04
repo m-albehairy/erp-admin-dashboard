@@ -43,7 +43,7 @@ export default function Dashboard() {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Total Revenue */}
-          <Card className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm hover:shadow-md transition-shadow border-0">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
@@ -60,7 +60,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Total Orders */}
-          <Card className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm hover:shadow-md transition-shadow border-0">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
@@ -77,7 +77,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Total Products */}
-          <Card className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm hover:shadow-md transition-shadow border-0">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Products</p>
@@ -94,7 +94,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Active Customers */}
-          <Card className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm hover:shadow-md transition-shadow border-0">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Active Customers</p>
@@ -114,7 +114,7 @@ export default function Dashboard() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Revenue Trend */}
-          <Card className="lg:col-span-2 p-6 bg-white shadow-sm border-0">
+          <Card className="lg:col-span-2 p-6 dark:bg-card bg-card shadow-sm border-0">
             <div className="mb-6">
               <h3 className="font-display font-bold text-lg text-foreground">Revenue Trend</h3>
               <p className="text-sm text-muted-foreground mt-1">Sales and revenue over the last 6 months</p>
@@ -139,7 +139,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Inventory Status */}
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             <div className="mb-6">
               <h3 className="font-display font-bold text-lg text-foreground">Inventory Status</h3>
               <p className="text-sm text-muted-foreground mt-1">Current stock levels</p>
@@ -158,7 +158,7 @@ export default function Dashboard() {
         </div>
 
         {/* Top Products */}
-        <Card className="p-6 bg-white shadow-sm border-0">
+        <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
           <div className="mb-6">
             <h3 className="font-display font-bold text-lg text-foreground">Top Selling Products</h3>
             <p className="text-sm text-muted-foreground mt-1">Performance metrics for top 5 products</p>

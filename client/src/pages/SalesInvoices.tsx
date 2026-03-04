@@ -32,9 +32,9 @@ function getStatusColor(status: string) {
     case "overdue":
       return "bg-red-50 text-red-600";
     case "cancelled":
-      return "bg-gray-50 text-gray-600";
+      return "dark:bg-secondary bg-secondary text-gray-600";
     default:
-      return "bg-gray-50 text-gray-600";
+      return "dark:bg-secondary bg-secondary text-gray-600";
   }
 }
 
@@ -94,22 +94,22 @@ export default function SalesInvoices() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Total Invoices</p>
             <h3 className="text-2xl font-bold text-foreground mt-2">1,542</h3>
             <p className="text-xs text-muted-foreground mt-2">All time</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Pending</p>
             <h3 className="text-2xl font-bold text-orange-600 mt-2">34</h3>
             <p className="text-xs text-muted-foreground mt-2">Awaiting payment</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Paid</p>
             <h3 className="text-2xl font-bold text-green-600 mt-2">1,487</h3>
             <p className="text-xs text-muted-foreground mt-2">Collected</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
             <h3 className="text-2xl font-bold text-primary mt-2">$4.2M</h3>
             <p className="text-xs text-muted-foreground mt-2">YTD revenue</p>
@@ -142,7 +142,7 @@ export default function SalesInvoices() {
         )}
 
         {/* Search and Advanced Controls - Single Row */}
-        <Card className="p-4 bg-white shadow-sm border-0">
+        <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
           <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
             {/* Search Bar */}
             <div className="flex-1 min-w-xs">
@@ -230,7 +230,7 @@ export default function SalesInvoices() {
 
         {/* Table View */}
         {viewMode === "table" && (
-          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+          <Card className="dark:bg-card bg-card shadow-sm border-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>

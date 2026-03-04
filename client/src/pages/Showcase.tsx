@@ -19,7 +19,7 @@ export default function Showcase() {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="bg-white border-b border-border shadow-sm sticky top-0 z-50">
+      <nav className="dark:bg-card bg-card border-b border-border shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-700 rounded-lg flex items-center justify-center text-white font-bold">
@@ -63,7 +63,7 @@ export default function Showcase() {
       </section>
 
       {/* Features Overview */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-20 px-6 dark:bg-card bg-card">
         <div className="max-w-6xl mx-auto">
           <h2 className="font-display font-bold text-4xl text-foreground text-center mb-16">
             Key Features
@@ -180,7 +180,7 @@ export default function Showcase() {
                 </div>
               </div>
             </div>
-            <Card className="p-8 bg-white shadow-sm border-0">
+            <Card className="p-8 dark:bg-card bg-card shadow-sm border-0">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
@@ -225,7 +225,7 @@ export default function Showcase() {
       </section>
 
       {/* Pages Overview */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-20 px-6 dark:bg-card bg-card">
         <div className="max-w-6xl mx-auto">
           <h2 className="font-display font-bold text-4xl text-foreground text-center mb-16">
             Three Example Pages
@@ -348,7 +348,7 @@ export default function Showcase() {
                 </div>
               </div>
             </div>
-            <Card className="p-8 bg-white shadow-sm border-0">
+            <Card className="p-8 dark:bg-card bg-card shadow-sm border-0">
               <h4 className="font-display font-bold text-xl text-foreground mb-6">Dashboard Capabilities</h4>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
@@ -390,7 +390,7 @@ export default function Showcase() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-20 px-6 dark:bg-card bg-card">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="font-display font-bold text-4xl text-foreground mb-6">
             Ready to Transform Your ERP System?

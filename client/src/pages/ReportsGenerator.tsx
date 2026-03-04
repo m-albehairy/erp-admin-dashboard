@@ -131,7 +131,7 @@ export default function ReportsGenerator() {
           <div className="space-y-4">
             {savedReports.length > 0 ? (
               savedReports.map((report) => (
-                <Card key={report.id} className="bg-white shadow-sm border-0 p-6 hover:shadow-md transition-shadow">
+                <Card key={report.id} className="dark:bg-card bg-card shadow-sm border-0 p-6 hover:shadow-md transition-shadow">
                   <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
                     <div className={`flex-1 ${isRTL ? "text-right" : ""}`}>
                       <h3 className="font-semibold text-foreground text-lg">{report.name}</h3>
@@ -177,7 +177,7 @@ export default function ReportsGenerator() {
         {activeTab === "templates" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {reportTemplates.map((template) => (
-              <Card key={template.id} className="bg-white shadow-sm border-0 p-6 hover:shadow-md transition-shadow cursor-pointer group">
+              <Card key={template.id} className="dark:bg-card bg-card shadow-sm border-0 p-6 hover:shadow-md transition-shadow cursor-pointer group">
                 <div className={`flex items-start justify-between mb-4 ${isRTL ? "flex-row-reverse" : ""}`}>
                   <div className="text-4xl">{template.icon}</div>
                   <span className="text-xs font-semibold px-2 py-1 bg-secondary rounded text-foreground">
@@ -200,7 +200,7 @@ export default function ReportsGenerator() {
         )}
 
         {/* Report Builder Preview */}
-        <Card className="bg-white shadow-sm border-0 p-6">
+        <Card className="dark:bg-card bg-card shadow-sm border-0 p-6">
           <h3 className={`font-display font-bold text-lg text-foreground mb-6 ${isRTL ? "text-right" : ""}`}>
             Quick Report Builder
           </h3>
@@ -210,7 +210,7 @@ export default function ReportsGenerator() {
               <label className={`text-sm font-medium text-foreground block mb-2 ${isRTL ? "text-right" : ""}`}>
                 Report Type
               </label>
-              <select className="w-full px-4 py-2 border border-border rounded-lg bg-white text-foreground">
+              <select className="w-full px-4 py-2 border border-border rounded-lg dark:bg-card bg-card text-foreground">
                 <option>Sales Report</option>
                 <option>Inventory Report</option>
                 <option>Financial Report</option>

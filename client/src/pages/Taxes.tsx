@@ -81,7 +81,7 @@ export default function Taxes() {
       <div className={`flex gap-6 ${isRTL ? "flex-row-reverse" : ""}`}>
         {/* Left Sidebar */}
         <div className="w-64 flex-shrink-0">
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <div className="space-y-2">
               {menuItems.map((item) => (
                 <button
@@ -90,7 +90,7 @@ export default function Taxes() {
                   className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
                     selectedTab === item.id
                       ? "bg-gray-200 dark:bg-gray-700 text-primary font-medium"
-                      : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                      : "hover:dark:bg-secondary bg-secondary dark:hover:bg-gray-800"
                   } ${isRTL ? "text-right" : ""}`}
                 >
                   {item.label}
@@ -102,7 +102,7 @@ export default function Taxes() {
 
         {/* Main Content */}
         <div className="flex-1">
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             {/* Header with Title and Actions */}
             <div className={`flex justify-between items-start mb-6 ${isRTL ? "flex-row-reverse" : ""}`}>
               <div>
@@ -117,7 +117,7 @@ export default function Taxes() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-0 hover:bg-gray-100"
+                  className="border-0 hover:dark:bg-secondary bg-secondary"
                   onClick={() => window.location.reload()}
                 >
                   <FontAwesomeIcon icon={faSync} className="w-4 h-4" />
@@ -137,7 +137,7 @@ export default function Taxes() {
               {taxes.map((tax) => (
                 <div
                   key={tax.id}
-                  className="border border-border rounded-lg p-4 bg-gray-50 dark:bg-gray-900"
+                  className="border border-border rounded-lg p-4 dark:bg-secondary bg-secondary dark:bg-gray-900"
                 >
                   {editingId === tax.id ? (
                     <div className="space-y-3">
@@ -150,7 +150,7 @@ export default function Taxes() {
                           onChange={(e) =>
                             setEditValues({ ...editValues, name: e.target.value })
                           }
-                          className="mt-1 border-0 bg-white h-9"
+                          className="mt-1 border-0 dark:bg-card bg-card h-9"
                           placeholder="Tax Name"
                         />
                       </div>
@@ -163,7 +163,7 @@ export default function Taxes() {
                           onChange={(e) =>
                             setEditValues({ ...editValues, code: e.target.value })
                           }
-                          className="mt-1 border-0 bg-white h-9"
+                          className="mt-1 border-0 dark:bg-card bg-card h-9"
                           placeholder="Tax Code"
                         />
                       </div>
@@ -180,7 +180,7 @@ export default function Taxes() {
                               rate: parseFloat(e.target.value),
                             })
                           }
-                          className="mt-1 border-0 bg-white h-9"
+                          className="mt-1 border-0 dark:bg-card bg-card h-9"
                           placeholder="0"
                         />
                       </div>
@@ -247,7 +247,7 @@ export default function Taxes() {
 
             {/* Action Buttons */}
             <div className={`flex gap-3 justify-end ${isRTL ? "flex-row-reverse" : ""}`}>
-              <Button variant="outline" className="border-0 hover:bg-gray-100">
+              <Button variant="outline" className="border-0 hover:dark:bg-secondary bg-secondary">
                 {language === "ar" ? "إلغاء" : "Cancel"}
               </Button>
               <Button className="bg-primary hover:bg-primary/90 text-white">

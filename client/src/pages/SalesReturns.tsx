@@ -29,7 +29,7 @@ function getStatusColor(status: string) {
     case "rejected":
       return "bg-red-50 text-red-600";
     default:
-      return "bg-gray-50 text-gray-600";
+      return "dark:bg-secondary bg-secondary text-gray-600";
   }
 }
 
@@ -76,22 +76,22 @@ export default function SalesReturns() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Total Returns</p>
             <h3 className="text-2xl font-bold text-foreground mt-2">145</h3>
             <p className="text-xs text-muted-foreground mt-2">All time</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Pending</p>
             <h3 className="text-2xl font-bold text-orange-600 mt-2">8</h3>
             <p className="text-xs text-muted-foreground mt-2">Awaiting processing</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Processed</p>
             <h3 className="text-2xl font-bold text-green-600 mt-2">137</h3>
             <p className="text-xs text-muted-foreground mt-2">Completed</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Total Value</p>
             <h3 className="text-2xl font-bold text-primary mt-2">$52.3K</h3>
             <p className="text-xs text-muted-foreground mt-2">Returned amount</p>
@@ -114,7 +114,7 @@ export default function SalesReturns() {
           />
         )}
 
-        <Card className="p-4 bg-white shadow-sm border-0">
+        <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
           <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
             <div className="flex-1 min-w-xs">
               <Input placeholder="Search by return number or customer..." className={`${isRTL ? "pr-4 text-right" : "pl-4"} bg-secondary border-0`} />
@@ -157,7 +157,7 @@ export default function SalesReturns() {
         </Card>
 
         {viewMode === "table" && (
-          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+          <Card className="dark:bg-card bg-card shadow-sm border-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>

@@ -40,7 +40,7 @@ function getStatusColor(status: string) {
     case "cancelled":
       return "bg-red-50 text-red-600";
     default:
-      return "bg-gray-50 text-gray-600";
+      return "dark:bg-secondary bg-secondary text-gray-600";
   }
 }
 
@@ -102,22 +102,22 @@ export default function OrderDetails() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
             <h3 className="text-2xl font-bold text-foreground mt-2">2,345</h3>
             <p className="text-xs text-muted-foreground mt-2">All time</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Pending</p>
             <h3 className="text-2xl font-bold text-orange-600 mt-2">23</h3>
             <p className="text-xs text-muted-foreground mt-2">Awaiting action</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">In Transit</p>
             <h3 className="text-2xl font-bold text-blue-600 mt-2">45</h3>
             <p className="text-xs text-muted-foreground mt-2">On the way</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Completed</p>
             <h3 className="text-2xl font-bold text-green-600 mt-2">2,277</h3>
             <p className="text-xs text-muted-foreground mt-2">Delivered</p>
@@ -146,7 +146,7 @@ export default function OrderDetails() {
         )}
 
         {/* Search and Advanced Controls - Single Row */}
-        <Card className="p-4 bg-white shadow-sm border-0">
+        <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
           <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
             {/* Search Bar */}
             <div className="flex-1 min-w-xs">
@@ -238,7 +238,7 @@ export default function OrderDetails() {
 
         {/* Table View */}
         {viewMode === "table" && (
-          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+          <Card className="dark:bg-card bg-card shadow-sm border-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="border-b border-border">
@@ -357,7 +357,7 @@ export default function OrderDetails() {
         {viewMode === "grid" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedData.map((order) => (
-              <Card key={order.id} className="p-6 bg-white shadow-sm border-0 hover:shadow-md transition-shadow">
+              <Card key={order.id} className="p-6 dark:bg-card bg-card shadow-sm border-0 hover:shadow-md transition-shadow">
                 <div className={`flex justify-between items-start mb-4 ${isRTL ? "flex-row-reverse" : ""}`}>
                   <div className={isRTL ? "text-right" : ""}>
                     <h3 className="font-display font-bold text-lg text-foreground">{order.orderNo}</h3>

@@ -32,9 +32,9 @@ function getStatusColor(status: string) {
     case "rejected":
       return "bg-red-50 text-red-600";
     case "expired":
-      return "bg-gray-50 text-gray-600";
+      return "dark:bg-secondary bg-secondary text-gray-600";
     default:
-      return "bg-gray-50 text-gray-600";
+      return "dark:bg-secondary bg-secondary text-gray-600";
   }
 }
 
@@ -94,22 +94,22 @@ export default function Quotations() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Total Quotations</p>
             <h3 className="text-2xl font-bold text-foreground mt-2">342</h3>
             <p className="text-xs text-muted-foreground mt-2">All time</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Pending</p>
             <h3 className="text-2xl font-bold text-orange-600 mt-2">28</h3>
             <p className="text-xs text-muted-foreground mt-2">Awaiting response</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Accepted</p>
             <h3 className="text-2xl font-bold text-green-600 mt-2">287</h3>
             <p className="text-xs text-muted-foreground mt-2">Converted to orders</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Total Value</p>
             <h3 className="text-2xl font-bold text-primary mt-2">$1.8M</h3>
             <p className="text-xs text-muted-foreground mt-2">Pipeline value</p>
@@ -142,7 +142,7 @@ export default function Quotations() {
         )}
 
         {/* Search and Advanced Controls - Single Row */}
-        <Card className="p-4 bg-white shadow-sm border-0">
+        <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
           <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
             {/* Search Bar */}
             <div className="flex-1 min-w-xs">
@@ -230,7 +230,7 @@ export default function Quotations() {
 
         {/* Table View */}
         {viewMode === "table" && (
-          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+          <Card className="dark:bg-card bg-card shadow-sm border-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -347,7 +347,7 @@ export default function Quotations() {
                   setPageSize(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="px-3 py-2 border border-border rounded-lg text-sm bg-white text-foreground"
+                className="px-3 py-2 border border-border rounded-lg text-sm dark:bg-card bg-card text-foreground"
               >
                 <option value={5}>5 per page</option>
                 <option value={10}>10 per page</option>
@@ -362,7 +362,7 @@ export default function Quotations() {
         {viewMode === "grid" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {paginatedData.map((item) => (
-              <Card key={item.id} className="p-4 bg-white shadow-sm border-0">
+              <Card key={item.id} className="p-4 dark:bg-card bg-card shadow-sm border-0">
                 <div className={`flex items-start justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
                   <div className={isRTL ? "text-right" : ""}>
                     <h3 className="font-semibold text-foreground">{item.quoteNo}</h3>

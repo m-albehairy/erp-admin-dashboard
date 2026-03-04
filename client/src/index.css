@@ -50,7 +50,7 @@
   --primary-foreground: #FFFFFF;
   --form-border: #e9edf4;
   --form-text: #202c4b;
-  --form-bg: #fff;
+  --form-bg: #cccccc;
   --sidebar-primary: #DC2626;
   --sidebar-primary-foreground: #FFFFFF;
   --chart-1: #FCA5A5;
@@ -159,7 +159,7 @@
   /* Component styling */
   .card-component {
     margin-bottom: 1.5rem;
-    background-color: #fff;
+    background-color: #cccccc;
     transition: all 0.5s ease-in-out;
     position: relative;
     border-radius: 5px;
@@ -177,7 +177,7 @@
   /* Apply to Card components */
   [class*="card"] {
     margin-bottom: 1.5rem;
-    background-color: #fff;
+    background-color: #cccccc;
     transition: all 0.5s ease-in-out;
     position: relative;
     border-radius: 5px;
@@ -212,7 +212,7 @@
   select {
     border-color: var(--form-border, #e9edf4) !important;
     color: var(--form-text, #202c4b) !important;
-    background-color: var(--form-bg, #fff) !important;
+    background-color: var(--form-bg, #cccccc) !important;
     font-size: 14px !important;
     font-weight: 400 !important;
     line-height: 1.6 !important;
@@ -262,7 +262,7 @@
 
   /* Apply to tables */
   table {
-    background-color: #fff;
+    background-color: #cccccc;
     border-radius: 5px;
     border: 1px solid #E9EDF4;
     box-shadow: 0 4.4px 12px -1px #dedede5c;

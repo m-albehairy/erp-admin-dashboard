@@ -34,7 +34,7 @@ function getStatusColor(status: string) {
     case "cancelled":
       return "bg-red-50 text-red-600";
     default:
-      return "bg-gray-50 text-gray-600";
+      return "dark:bg-secondary bg-secondary text-gray-600";
   }
 }
 
@@ -47,7 +47,7 @@ function getPaymentStatusColor(status: string) {
     case "overdue":
       return "bg-red-50 text-red-600";
     default:
-      return "bg-gray-50 text-gray-600";
+      return "dark:bg-secondary bg-secondary text-gray-600";
   }
 }
 
@@ -107,22 +107,22 @@ export default function PurchaseOrders() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
             <h3 className="text-2xl font-bold text-foreground mt-2">1,245</h3>
             <p className="text-xs text-muted-foreground mt-2">All time</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Processing</p>
             <h3 className="text-2xl font-bold text-orange-600 mt-2">23</h3>
             <p className="text-xs text-muted-foreground mt-2">Awaiting delivery</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Pending Payment</p>
             <h3 className="text-2xl font-bold text-blue-600 mt-2">15</h3>
             <p className="text-xs text-muted-foreground mt-2">Outstanding</p>
           </Card>
-          <Card className="p-4 bg-white shadow-sm border-0">
+          <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
             <p className="text-sm font-medium text-muted-foreground">Total Value</p>
             <h3 className="text-2xl font-bold text-primary mt-2">$2.3M</h3>
             <p className="text-xs text-muted-foreground mt-2">YTD spending</p>
@@ -155,7 +155,7 @@ export default function PurchaseOrders() {
         )}
 
         {/* Search and Advanced Controls - Single Row */}
-        <Card className="p-4 bg-white shadow-sm border-0">
+        <Card className="p-4 dark:bg-card bg-card shadow-sm border-0">
           <div className={`flex flex-wrap gap-2 items-center ${isRTL ? "flex-row-reverse" : ""}`}>
             {/* Search Bar */}
             <div className="flex-1 min-w-xs">
@@ -247,7 +247,7 @@ export default function PurchaseOrders() {
 
         {/* Table View */}
         {viewMode === "table" && (
-          <Card className="bg-white shadow-sm border-0 overflow-hidden">
+          <Card className="dark:bg-card bg-card shadow-sm border-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -370,7 +370,7 @@ export default function PurchaseOrders() {
                   setPageSize(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="px-3 py-2 border border-border rounded-lg text-sm bg-white text-foreground"
+                className="px-3 py-2 border border-border rounded-lg text-sm dark:bg-card bg-card text-foreground"
               >
                 <option value={5}>5 per page</option>
                 <option value={10}>10 per page</option>
@@ -385,7 +385,7 @@ export default function PurchaseOrders() {
         {viewMode === "grid" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {paginatedData.map((item) => (
-              <Card key={item.id} className="p-4 bg-white shadow-sm border-0">
+              <Card key={item.id} className="p-4 dark:bg-card bg-card shadow-sm border-0">
                 <div className={`flex items-start justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
                   <div className={isRTL ? "text-right" : ""}>
                     <h3 className="font-semibold text-foreground">{item.poNo}</h3>

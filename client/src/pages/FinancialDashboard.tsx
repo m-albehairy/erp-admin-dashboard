@@ -60,7 +60,7 @@ export default function FinancialDashboard() {
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
               <div className={isRTL ? "text-right" : ""}>
                 <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
@@ -73,7 +73,7 @@ export default function FinancialDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
               <div className={isRTL ? "text-right" : ""}>
                 <p className="text-sm font-medium text-muted-foreground">Total Expenses</p>
@@ -86,7 +86,7 @@ export default function FinancialDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
               <div className={isRTL ? "text-right" : ""}>
                 <p className="text-sm font-medium text-muted-foreground">Net Profit</p>
@@ -99,7 +99,7 @@ export default function FinancialDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
               <div className={isRTL ? "text-right" : ""}>
                 <p className="text-sm font-medium text-muted-foreground">Profit Margin</p>
@@ -116,7 +116,7 @@ export default function FinancialDashboard() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Revenue vs Expenses */}
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
               Revenue vs Expenses
             </h3>
@@ -131,7 +131,7 @@ export default function FinancialDashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                 <XAxis dataKey="month" stroke="#6B7280" />
                 <YAxis stroke="#6B7280" />
-                <Tooltip contentStyle={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ backgroundColor: "#cccccc", border: "1px solid #e5e7eb" }} />
                 <Legend />
                 <Area type="monotone" dataKey="revenue" stroke="#10B981" fillOpacity={1} fill="url(#colorRevenue)" />
                 <Line type="monotone" dataKey="expenses" stroke="#F59E0B" strokeWidth={2} />
@@ -140,7 +140,7 @@ export default function FinancialDashboard() {
           </Card>
 
           {/* Profit Trend */}
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
               Profit Trend
             </h3>
@@ -149,7 +149,7 @@ export default function FinancialDashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                 <XAxis dataKey="month" stroke="#6B7280" />
                 <YAxis stroke="#6B7280" />
-                <Tooltip contentStyle={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ backgroundColor: "#cccccc", border: "1px solid #e5e7eb" }} />
                 <Bar dataKey="profit" fill="#0066CC" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -159,7 +159,7 @@ export default function FinancialDashboard() {
         {/* Expense Breakdown and Cash Flow */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Expense Breakdown */}
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
               Expense Breakdown
             </h3>
@@ -183,7 +183,7 @@ export default function FinancialDashboard() {
           </Card>
 
           {/* Cash Flow */}
-          <Card className="p-6 bg-white shadow-sm border-0">
+          <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
             <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
               Weekly Cash Flow
             </h3>
@@ -192,7 +192,7 @@ export default function FinancialDashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                 <XAxis dataKey="week" stroke="#6B7280" />
                 <YAxis stroke="#6B7280" />
-                <Tooltip contentStyle={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ backgroundColor: "#cccccc", border: "1px solid #e5e7eb" }} />
                 <Legend />
                 <Bar dataKey="inflow" fill="#10B981" radius={[8, 8, 0, 0]} />
                 <Bar dataKey="outflow" fill="#EF4444" radius={[8, 8, 0, 0]} />
@@ -202,7 +202,7 @@ export default function FinancialDashboard() {
         </div>
 
         {/* Financial Summary */}
-        <Card className="p-6 bg-white shadow-sm border-0">
+        <Card className="p-6 dark:bg-card bg-card shadow-sm border-0">
           <h3 className={`font-display font-bold text-lg text-foreground mb-4 ${isRTL ? "text-right" : ""}`}>
             Financial Summary
           </h3>

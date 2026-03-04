@@ -57,7 +57,7 @@ export default function Settings() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar Tabs */}
           <div className="lg:col-span-1">
-            <Card className="bg-white shadow-sm border-0 p-0 overflow-hidden">
+            <Card className="dark:bg-card bg-card shadow-sm border-0 p-0 overflow-hidden">
               <nav className="flex flex-col">
                 {tabs.map((tab) => (
                   <button
@@ -81,7 +81,7 @@ export default function Settings() {
           <div className="lg:col-span-3">
             {/* General Settings */}
             {activeTab === "general" && (
-              <Card className="bg-white shadow-sm border-0 p-6">
+              <Card className="dark:bg-card bg-card shadow-sm border-0 p-6">
                 <h3 className={`font-display font-bold text-lg text-foreground mb-6 ${isRTL ? "text-right" : ""}`}>
                   General Settings
                 </h3>
@@ -164,7 +164,7 @@ export default function Settings() {
 
             {/* Profile Settings */}
             {activeTab === "profile" && (
-              <Card className="bg-white shadow-sm border-0 p-6">
+              <Card className="dark:bg-card bg-card shadow-sm border-0 p-6">
                 <h3 className={`font-display font-bold text-lg text-foreground mb-6 ${isRTL ? "text-right" : ""}`}>
                   Profile Information
                 </h3>
@@ -241,7 +241,7 @@ export default function Settings() {
 
             {/* Notifications Settings */}
             {activeTab === "notifications" && (
-              <Card className="bg-white shadow-sm border-0 p-6">
+              <Card className="dark:bg-card bg-card shadow-sm border-0 p-6">
                 <h3 className={`font-display font-bold text-lg text-foreground mb-6 ${isRTL ? "text-right" : ""}`}>
                   Notification Preferences
                 </h3>
@@ -271,7 +271,7 @@ export default function Settings() {
 
             {/* Security Settings */}
             {activeTab === "security" && (
-              <Card className="bg-white shadow-sm border-0 p-6">
+              <Card className="dark:bg-card bg-card shadow-sm border-0 p-6">
                 <h3 className={`font-display font-bold text-lg text-foreground mb-6 ${isRTL ? "text-right" : ""}`}>
                   Security Settings
                 </h3>
@@ -330,7 +330,7 @@ export default function Settings() {
 
             {/* Appearance Settings */}
             {activeTab === "appearance" && (
-              <Card className="bg-white shadow-sm border-0 p-6">
+              <Card className="dark:bg-card bg-card shadow-sm border-0 p-6">
                 <h3 className={`font-display font-bold text-lg text-foreground mb-6 ${isRTL ? "text-right" : ""}`}>
                   Appearance Settings
                 </h3>
@@ -340,7 +340,7 @@ export default function Settings() {
 
             {/* Integrations Settings */}
             {activeTab === "integrations" && (
-              <Card className="bg-white shadow-sm border-0 p-6">
+              <Card className="dark:bg-card bg-card shadow-sm border-0 p-6">
                 <h3 className={`font-display font-bold text-lg text-foreground mb-6 ${isRTL ? "text-right" : ""}`}>
                   Integrations
                 </h3>

@@ -40,7 +40,7 @@ export default function AnimatedModal({
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <div
-          className={`${sizeClasses[size]} bg-white dark:bg-card rounded-lg shadow-lg border border-border dark:border-border pointer-events-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300`}
+          className={`${sizeClasses[size]} dark:bg-card bg-card dark:bg-card rounded-lg shadow-lg border border-border dark:border-border pointer-events-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

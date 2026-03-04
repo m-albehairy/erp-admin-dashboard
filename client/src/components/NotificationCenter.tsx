@@ -99,7 +99,7 @@ export default function NotificationCenter() {
     <div
       className={`p-3 rounded-lg border flex items-start gap-3 cursor-pointer transition-colors ${
         notif.read
-          ? "bg-white border-E9EDF4 hover:bg-secondary/30"
+          ? "dark:bg-card bg-card border-E9EDF4 hover:bg-secondary/30"
           : "bg-blue-50 border-blue-200 hover:bg-blue-100"
       }`}
       onClick={() => handleMarkAsRead(notif.id)}
